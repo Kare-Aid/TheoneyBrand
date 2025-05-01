@@ -2,10 +2,10 @@
 import { useState, useEffect } from "react"
 
 function useDarkModeObserver() {
-  const [isDarkMode, setIsDarkMode] = useState(document.documentElement.classList.contains("dark"))
-  const target = document.documentElement
+  const [isDarkMode, setIsDarkMode] = useState(false)
 
   useEffect(() => {
+    const target = document.documentElement
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         if (mutation.attributeName === "class") {
