@@ -14,7 +14,7 @@ function Cart({ showCart, closeCart }: Props) {
           animate={{ top: 0 }}
           exit={{ top: "-100%" }}
           transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-          className="bg-background fixed z-50 top-0 left-1/2 -translate-x-1/2 w-full h-screen max-h-[2000px] border-red-700 max-w-screen-2xl px-4 sm:px-7 md:px-12 overflow-y-auto pb-24 md:pb-10"
+          className="bg-background fixed z-[60] top-0 left-1/2 -translate-x-1/2 w-full h-screen max-h-[2000px] border-red-700 max-w-screen-2xl px-4 sm:px-7 md:px-12 overflow-y-auto pb-24 md:pb-10"
         >
           <hr className="border-t-2 border-[#14131333] dark:border-[#FFFFFF33] mt-14 mb-4" />
           <header className="flex gap-4 items-center mb-5">

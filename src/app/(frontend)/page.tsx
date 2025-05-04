@@ -38,23 +38,25 @@ export default async function HomePage() {
               </button>
               {products.map((product) => (
                 <li key={product.id}>
-                  <figure className="cursor-pointer">
-                    <div className="h-80 min-w-[200px] overflow-hidden rounded-lg">
-                      <Image
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="h-full w-full object-cover mb-2 hover:scale-110 transition-transform duration-500"
-                        width={555}
-                        height={370}
-                      />
-                    </div>
-                    <figcaption>
-                      <p className="text-lg">{product.name}</p>
-                      <p className="flex gap-1 font-semibold">
-                        <span>₦</span> <span>{product.price.toLocaleString()}</span>
-                      </p>
-                    </figcaption>
-                  </figure>
+                  <Link href="/products/12345" className="block">
+                    <figure className="cursor-pointer">
+                      <div className="h-80 min-w-[200px] overflow-hidden rounded-lg">
+                        <Image
+                          src={product.imageUrl}
+                          alt={product.name}
+                          className="h-full w-full object-cover mb-2 hover:scale-110 transition-transform duration-500"
+                          width={555}
+                          height={370}
+                        />
+                      </div>
+                      <figcaption>
+                        <p className="text-lg">{product.name}</p>
+                        <p className="flex gap-1 font-semibold">
+                          <span>₦</span> <span>{product.price.toLocaleString()}</span>
+                        </p>
+                      </figcaption>
+                    </figure>
+                  </Link>
                 </li>
               ))}
               <button className="absolute top-1/2 -translate-y-1/2 right-6 p-1 rounded-full bg-border text-white dark:bg-white dark:text-black hidden md:inline">

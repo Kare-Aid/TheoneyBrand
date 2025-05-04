@@ -12,6 +12,7 @@ import { phoneCaseVariations } from "@/lib/data/singleProduct"
 import ProductCard from "@/components/global/ProductCard"
 import { AnimatePresence, motion } from "framer-motion"
 import { glasses } from "@/lib/data/productpage"
+import Image from "next/image"
 
 const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
 
@@ -89,10 +90,12 @@ function SingleProductPage() {
                     <GoHeart color="#21242A" size={23} />
                   )}
                 </button>
-                <img
+                <Image
                   src={image.imageUrl}
                   alt="Product image"
                   className="w-full h-[300px] sm:h-[500px] md:h-[666px] object-cover"
+                  width={100}
+                  height={300}
                 />
               </motion.div>
             ))}
@@ -101,26 +104,32 @@ function SingleProductPage() {
           {/* Other images */}
           <div className="grid gap-2 grid-cols-3">
             <div className="" onClick={() => setCurrentAngle("Front")}>
-              <img
+              <Image
                 src="/images/products/samples/glass-1.jpg"
                 alt="Front picture"
                 className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
+                width={500}
+                height={300}
               />
               <p className="text-sm">Front</p>
             </div>
             <div className="" onClick={() => setCurrentAngle("Back")}>
-              <img
+              <Image
                 src="/images/products/samples/glass-2.jpg"
                 alt="Front picture"
                 className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
+                width={500}
+                height={300}
               />
               <p className="text-sm">Back</p>
             </div>
             <div className="" onClick={() => setCurrentAngle("Side")}>
-              <img
+              <Image
                 src="/images/products/samples/glass-3.jpg"
                 alt="Front picture"
                 className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
+                width={500}
+                height={300}
               />
               <p className="text-sm">Side</p>
             </div>
@@ -138,7 +147,7 @@ function SingleProductPage() {
             <h3 className="font-serifDisplay italic text-3xl mb-4">Description</h3>
             <p className="text-sm">
               Christian Dior dresses epitomise timeless elegance, blending exquisite craftsmanship
-              with avant-garde designs. Renowned for revolutionising post-war fashion, Dior's
+              with avant-garde designs. Renowned for revolutionising post-war fashion, Dior&apos;s
               creations exude sophistication, often featuring luxurious fabrics, meticulous
               tailoring, and iconic silhouettes
             </p>
@@ -151,7 +160,9 @@ function SingleProductPage() {
                   <button
                     style={{ backgroundColor: color }}
                     className={
-                      "size-6 rounded-full " + (color === "#020A1B" && "dark:border border-border")
+                      "size-6 rounded-full " +
+                      (color === "#020A1B" && "dark:border border-border ") +
+                      (color === "#ffffff" && "border-black border")
                     }
                   />
                 </li>

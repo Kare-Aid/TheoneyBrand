@@ -54,7 +54,7 @@ function Navigation() {
     return () => {
       document.body.classList.remove("overflow-hidden")
     }
-  }, [openNav])
+  }, [openNav, showCart])
   return (
     <>
       <Cart showCart={showCart} closeCart={() => setShowCart(false)} />

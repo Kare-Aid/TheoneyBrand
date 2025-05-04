@@ -3,8 +3,9 @@ import React from "react"
 import { useState } from "react"
 import { glasses } from "@/lib/data/productpage"
 import { GoHeart, GoHeartFill } from "react-icons/go"
-import { AnimatePresence, motion } from "framer-motion"
+// import { AnimatePresence, motion } from "framer-motion"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 type Props = {
   name?: string
@@ -43,7 +44,7 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
       >
         <div className="relative w-full h-full max-h-[170px] sm:max-h-[300px]">
           {/* Display on hover  */}
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {showOverlay && (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -62,11 +63,13 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
                 </button>
               </motion.div>
             )}
-          </AnimatePresence>
-          <img
+          </AnimatePresence> */}
+          <Image
             src={imageUrl ?? glass.imageUrl}
             alt={name ?? glass.name}
             className="mb-2 object-cover w-full h-full"
+            width={100}
+            height={100}
           />
         </div>
         <figcaption className="flex items-start justify-between">

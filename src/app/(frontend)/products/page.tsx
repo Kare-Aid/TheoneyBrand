@@ -1,4 +1,3 @@
-import Link from "next/link"
 import ProductsPage from "./page.client"
 import { Metadata } from "next"
 

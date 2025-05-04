@@ -36,6 +36,7 @@ function AnimatedTestimonials({
       const interval = setInterval(handleNext, 5000)
       return () => clearInterval(interval)
     }
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, [autoplay])
 
   const randomRotateY = () => {
