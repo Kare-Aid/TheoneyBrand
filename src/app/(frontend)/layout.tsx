@@ -14,7 +14,7 @@ const serifDisplay = DM_Serif_Display({
 })
 
 export const metadata: Metadata = {
-  title: { template: "%s | The Oney Brand", default: "The Oney Brand" },
+  title: { template: "%s | The Oney Brand", default: "Theoney Brand" },
   description:
     "Elevate your device with our handcrafted premium phone cases and ultra-clear tempered glass protectors. Where cutting-edge protection meets timeless elegance.",
 }

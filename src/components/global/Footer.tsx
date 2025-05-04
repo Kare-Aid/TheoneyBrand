@@ -17,7 +17,7 @@ function Footer() {
       <hr className="border-t-2 border-[#14131333] dark:border-[#FFFFFF33] mb-6 -mx-3 sm:-mx-12" />
       <div className="flex gap-10 flex-col md:flex-row justify-between text-border">
         <div className="space-y-3 flex flex-col">
-          <a href="tel:+2349077478195">090-77 47 8195</a>
+          <a href="tel:+2347086686597">070-86 68 6597</a>
           <a href="mailto:Info@theoneybrand.com" className="font-manrope font-medium">
             Info@theoneybrand.com
           </a>

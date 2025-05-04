@@ -11,15 +11,24 @@ import { animate, stagger, spring } from "framer-motion"
 import Image from "next/image"
 import { useTheme } from "next-themes"
 import useDarkModeObserver from "@/hooks/useDarkModeObserver"
+import Cart from "./Cart"
 
-const links = ["Home", "Shop", "About", "Cart", "Profile"]
+const links: { text: string; url: string }[] = [
+  { text: "Home", url: "/" },
+  { text: "Shop", url: "/products" },
+  { text: "About", url: "#" },
+  { text: "Cart", url: "#" },
+  { text: "Profile", url: "#" },
+]
 
 function Navigation() {
   const [openNav, setOpenNav] = useState(false)
+  const [showCart, setShowCart] = useState(false)
   const { setTheme } = useTheme()
   const isDarkMode = useDarkModeObserver()
 
   async function closeNavigation() {
+    //Animate links out before navigation closes
     await animate(
       "li.font-serifDisplay",
       { x: [0, -40], opacity: [1, 0] },
@@ -29,17 +38,18 @@ function Navigation() {
   }
 
   useEffect(() => {
-    //Animate links  when openNav is set to true
+    //Animate links in when openNav is set to true
     if (openNav) {
       animate(
         "li.font-serifDisplay",
         { x: [-30, 0], opacity: [0, 1] },
         { duration: 1, delay: stagger(0.1), type: spring, stiffness: 300 },
       )
-      document.body.classList.add("overflow-hidden")
-    } else {
-      document.body.classList.remove("overflow-hidden")
     }
+
+    // Lock scroll when menu or cart is opened
+    if (showCart || openNav) document.body.classList.add("overflow-hidden")
+    else document.body.classList.remove("overflow-hidden")
 
     return () => {
       document.body.classList.remove("overflow-hidden")
@@ -47,6 +57,7 @@ function Navigation() {
   }, [openNav])
   return (
     <>
+      <Cart showCart={showCart} closeCart={() => setShowCart(false)} />
       <header className="flex items-center justify-between bg-transparent px-4 sm:px-7 md:px-12 py-2 relative z-10">
         <Link href="/">
           <Logo />
@@ -62,7 +73,10 @@ function Navigation() {
             {isDarkMode ? <LuSunMedium /> : <FiMoon />}
           </motion.button>
 
-          <button className="bg-[#010D0B] text-white dark:bg-white dark:text-[#010D0B] p-2 rounded-full text-base sm:text-lg hidden md:inline">
+          <button
+            onClick={() => setShowCart(true)}
+            className="bg-[#010D0B] text-white dark:bg-white dark:text-[#010D0B] p-2 rounded-full text-base sm:text-lg hidden md:inline"
+          >
             <PiShoppingCartBold />
           </button>
 
@@ -91,7 +105,7 @@ function Navigation() {
               animate={{ clipPath: "circle(140% at 4% 4%)" }}
               exit={{ clipPath: "circle(0.3% at 100% 0)" }}
               transition={{ duration: 0.5 }}
-              className="bg-[#0a5c55] dark:bg-primary w-full md:w-1/2 max-w-[800px] min-h-[500px] h-screen absolute top-0 right-0 z-20 p-5"
+              className="bg-[#0a5c55] dark:bg-primary w-full md:w-1/2 max-w-[800px] min-h-[500px] h-screen absolute top-0 right-0 z-50 p-5"
             >
               <button
                 onClick={closeNavigation}
@@ -111,9 +125,12 @@ function Navigation() {
                   <li
                     className="font-serifDisplay text-4xl md:text-6xl text-white"
                     key={Math.random() * 29345}
-                    onClick={closeNavigation}
+                    onClick={() => {
+                      if (link.text == "Cart") setShowCart(true)
+                      closeNavigation()
+                    }}
                   >
-                    <Link href="#">{link}</Link>
+                    <Link href={link.url}>{link.text}</Link>
                   </li>
                 ))}
               </ul>

@@ -1,0 +1,16 @@
+export const phoneCaseVariations = [
+  "Iphone 15 pro max",
+  "Iphone 15 pro",
+  "Iphone 15",
+  "Iphone 14 pro max",
+  "Iphone 14 pro",
+  "Iphone 14",
+  "Iphone 13 pro max",
+  "Iphone 13 pro",
+  "Iphone 13",
+  "Iphone 12 pro max",
+  "Iphone 12",
+  "Iphone 11 pro max",
+  "Iphone 11 pro",
+  "Iphone 11",
+]

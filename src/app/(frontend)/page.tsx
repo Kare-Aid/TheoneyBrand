@@ -14,7 +14,7 @@ export default async function HomePage() {
       <HeroSection />
 
       <hr className="-mx-3 sm:-mx-12 border-t-2 border-[#14131333] dark:border-[#FFFFFF33]" />
-      
+
       <section className="my-14">
         <header className="mb-8">
           <h3 className="text-[#131212A6] dark:text-[#FFFFFFA6] text-lg font-semibold mb-3">
@@ -27,7 +27,7 @@ export default async function HomePage() {
         </header>
         <div>
           <nav className="flex justify-end md:pr-16 lg:pr-24 mb-5">
-            <Link href="#" className="font-semibold text-primary dark:text-white">
+            <Link href="/products" className="font-semibold text-primary dark:text-white">
               View all products
             </Link>
           </nav>

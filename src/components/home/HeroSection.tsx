@@ -33,7 +33,7 @@ function HeroSection() {
         </p>
         <p className="font-light mb-10">Explore premium eyewear and phonecases</p>
         <Link
-          href="#"
+          href="/products"
           className="border border-border text-border font-semibold px-9 py-2 rounded-full bg-[#1615153B] dark:text-white dark:bg-[#FFFFFF3B] block w-full md:w-max text-center wavy-button"
         >
           Shop now
@@ -42,11 +42,11 @@ function HeroSection() {
 
       {/* Image animated on scroll  */}
       <div className="w-[45%] lg:w-1/2 h-full max-h-[590px] lg:max-h-[650px] absolute right-0 top-0 hidden md:inline-block overflow-hidden">
-        <motion.div style={{ scale }} className=" h-full">
+        <motion.div style={{ scale }} className="h-full">
           <Image
             src="/images/home/girl-on-glasses.png"
             alt="Girl on glasses"
-            className="object-cover"
+            className="object-cover w-full h-full"
             width={1334}
             height={2000}
           />
