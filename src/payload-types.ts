@@ -185,7 +185,7 @@ export interface Product {
   price: number;
   quantity: number;
   description: string;
-  'Shipping details': string;
+  shippingDetails: string;
   images: {
     image: string | Media;
     label: string;
@@ -401,7 +401,7 @@ export interface ProductsSelect<T extends boolean = true> {
   price?: T;
   quantity?: T;
   description?: T;
-  'Shipping details'?: T;
+  shippingDetails?: T;
   images?:
     | T
     | {

@@ -9,7 +9,7 @@ export const Products: CollectionConfig = {
     //! Subtract from product and stock on every purchase
     { name: "quantity", type: "number", required: true, admin: { position: "sidebar" } },
     { name: "description", required: true, type: "textarea" },
-    { name: "Shipping details", type: "textarea", required: true },
+    { name: "shippingDetails", type: "textarea", required: true },
     {
       name: "images",
       type: "array",
