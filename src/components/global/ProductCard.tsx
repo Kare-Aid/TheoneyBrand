@@ -3,7 +3,6 @@ import React from "react"
 import { useState } from "react"
 import { glasses } from "@/lib/data/productpage"
 import { GoHeart, GoHeartFill } from "react-icons/go"
-// import { AnimatePresence, motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 
@@ -16,14 +15,11 @@ type Props = {
 
 function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
   const [like, setLike] = useState(false)
-  const [showOverlay, setShowOverlay] = useState(false)
   const router = useRouter()
   const glass = glasses[0]
   return (
     <li
       className="relative w-full min-h-[350px] sm:max-w-[450px]"
-      onMouseOver={() => setShowOverlay(true)}
-      onMouseLeave={() => setShowOverlay(false)}
     >
       <button
         className="absolute z-10 right-2 top-2"

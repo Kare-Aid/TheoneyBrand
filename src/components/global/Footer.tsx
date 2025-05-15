@@ -1,10 +1,15 @@
+"use client"
 import React from "react"
 import Link from "next/link"
 import Logo from "./Logo"
+import { usePathname } from "next/navigation"
+import { excludedLinks } from "@/lib/constants"
 
 const footerLinks = ["Privacy policy", "Terms and conditions", "Shipping policy", "Refund policy"]
 
 function Footer() {
+  const pathname = usePathname()
+  if (excludedLinks.includes(pathname)) return null
   return (
     <footer className="pb-10 px-4 sm:px-7 md:px-12">
       <hr className="-mx-3 sm:-mx-12 border-t-2 border-[#14131333] dark:border-[#FFFFFF33] mb-6" />

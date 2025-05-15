@@ -11,6 +11,8 @@ import { animate, stagger, spring } from "framer-motion"
 import Image from "next/image"
 import { useTheme } from "next-themes"
 import useDarkModeObserver from "@/hooks/useDarkModeObserver"
+import { usePathname } from "next/navigation"
+import { excludedLinks } from "@/lib/constants"
 import Cart from "./Cart"
 
 const links: { text: string; url: string }[] = [
@@ -18,7 +20,7 @@ const links: { text: string; url: string }[] = [
   { text: "Shop", url: "/products" },
   { text: "About", url: "#" },
   { text: "Cart", url: "#" },
-  { text: "Profile", url: "#" },
+  { text: "Profile", url: "/profile" },
 ]
 
 function Navigation() {
@@ -26,6 +28,7 @@ function Navigation() {
   const [showCart, setShowCart] = useState(false)
   const { setTheme } = useTheme()
   const isDarkMode = useDarkModeObserver()
+  const pathname = usePathname()
 
   async function closeNavigation() {
     //Animate links out before navigation closes
@@ -55,6 +58,8 @@ function Navigation() {
       document.body.classList.remove("overflow-hidden")
     }
   }, [openNav, showCart])
+
+  if (excludedLinks.includes(pathname)) return null
   return (
     <>
       <Cart showCart={showCart} closeCart={() => setShowCart(false)} />
@@ -82,7 +87,7 @@ function Navigation() {
 
           <button
             onClick={() => setOpenNav(true)}
-            className="text-primary text-sm sm:text-base border border-primary bg-primary-foreground uppercase px-7 py-1 rounded-full font-semibold"
+            className="text-primary text-sm sm:text-base border border-primary bg-primary-foreground uppercase px-8 sm:px-10 py-2 rounded-full font-semibold"
           >
             Menu
           </button>
