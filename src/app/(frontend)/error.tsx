@@ -6,7 +6,7 @@ import { useEffect } from "react"
 
 function Error({ reset, error }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    console.log(error)
+    console.error(error)
   }, [])
   return (
     <div className="max-w-screen-2xl mx-auto flex items-center justify-center min-h-[80vh]">

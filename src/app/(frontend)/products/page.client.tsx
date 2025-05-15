@@ -119,7 +119,7 @@ function ProductsPage() {
           <h3 className="font-manrope font-semibold">{activeTab}</h3>
         </header>
         <main>
-          <ul className="grid gap-2 md:gap-10 grid-cols-2 md:grid-cols-3 justify-between">
+          <ul className="grid gap-3 md:gap-10 grid-cols-2 md:grid-cols-3 justify-between">
             {glasses.map((product) => (
               <ProductCard key={Math.random() * 1593948} {...product} />
             ))}

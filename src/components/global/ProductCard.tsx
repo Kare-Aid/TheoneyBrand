@@ -21,7 +21,7 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
   const glass = glasses[0]
   return (
     <li
-      className="relative w-full sm:max-w-[450px]"
+      className="relative w-full min-h-[350px] sm:max-w-[450px]"
       onMouseOver={() => setShowOverlay(true)}
       onMouseLeave={() => setShowOverlay(false)}
     >
@@ -42,28 +42,7 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
           router.push("/products/12345")
         }}
       >
-        <div className="relative w-full h-full max-h-[170px] sm:max-h-[300px]">
-          {/* Display on hover  */}
-          {/* <AnimatePresence>
-            {showOverlay && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute p-1 z-10 bg-[#000000A6] inset-0"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  className="bg-primary relative z-20 text-white text-xs py-2 px-4 rounded-full"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                  }}
-                >
-                  Add to cart
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence> */}
+        <div className="relative w-full h-full overflow-hidden max-h-[230px] sm:max-h-[300px] mb-2">
           <Image
             src={imageUrl ?? glass.imageUrl}
             alt={name ?? glass.name}
@@ -72,7 +51,7 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
             height={100}
           />
         </div>
-        <figcaption className="flex items-start justify-between">
+        <figcaption className="flex flex-wrap items-start justify-between space-y-3">
           <div>
             <h3 className="font-serifDisplay text-sm">{name ?? glass.name}</h3>
             <p className="text-xs font-light">{fitsWith ?? glass.fitsWith}</p>
@@ -81,6 +60,14 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
             <span>₦</span>{" "}
             <span>{price ? price?.toLocaleString() : glass.price.toLocaleString()}</span>
           </p>
+          <button
+            className="bg-primary dark:bg-[#FFFFFF3B] border-0 dark:border border-border w-full relative z-20 text-white py-2 font-semibold rounded-full mb-2"
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+          >
+            Add to cart
+          </button>
         </figcaption>
       </figure>
     </li>
