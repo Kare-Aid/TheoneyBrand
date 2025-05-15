@@ -1,6 +1,7 @@
 import React from "react"
 import Image from "next/image"
 import Link from "next/link"
+import BackButton from "@/components/global/BackButton"
 
 function NotFound() {
   return (
@@ -14,9 +15,7 @@ function NotFound() {
           height={984}
         />
         <div className="flex gap-3 items-center justify-center">
-          <button className="border border-border font-semibold px-9 py-2 rounded-full bg-[#1615153B] dark:bg-[#FFFFFF3B] text-center wavy-button">
-            Back
-          </button>
+          <BackButton />
           <Link href="/" className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full">
             Go home
           </Link>
