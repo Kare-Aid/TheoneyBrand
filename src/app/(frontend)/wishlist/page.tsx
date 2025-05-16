@@ -7,7 +7,9 @@ import ProductCard from "@/components/global/ProductCard"
 
 function Page() {
   const router = useRouter()
-  throw Error()
+  function throwError() {
+    throw Error()
+  }
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
       <header className="mt-8 mb-14">
@@ -17,6 +19,7 @@ function Page() {
         >
           <BsArrowLeft size={23} />
         </button>
+        <button onClick={throwError}>Throw error </button>
         <nav className="flex gap-1 items-center text-lg">
           <Link href="#" className="font-manrope font-medium text-black dark:text-white">
             Wishlist
