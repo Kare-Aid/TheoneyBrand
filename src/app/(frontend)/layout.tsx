@@ -5,6 +5,7 @@ import { Manrope, DM_Serif_Display } from "next/font/google"
 import { ThemeProvider } from "@/components/ThemeProvider"
 import Footer from "@/components/global/Footer"
 import Navigation from "@/components/global/Navigation"
+import { Toaster } from "sonner"
 
 const manrope = Manrope({ subsets: ["latin"] })
 const serifDisplay = DM_Serif_Display({
@@ -29,6 +30,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
     >
       <body>
         <ThemeProvider attribute="class">
+          <Toaster richColors position="top-right" />
           <div className="relative max-w-screen-2xl mx-auto">
             <Navigation />
             <main className="font-manrope">{children}</main>

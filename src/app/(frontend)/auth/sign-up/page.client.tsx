@@ -1,9 +1,20 @@
 "use client"
 import React, { FormEvent } from "react"
+import { toast } from "sonner"
 
 function Signup() {
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    toast.success("Sign up success", { closeButton: true })
+    const response = await fetch("/api/auth/sign-up", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    const data = await response.json()
+    console.log(data)
   }
   return (
     <section className="border w-full sm:w-10/12 lg:w-2/3 dark:bg-[#011A1608] border-[#FFFFFF0A] p-5 -mt-28 sm:mt-0">
