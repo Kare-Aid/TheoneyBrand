@@ -9,6 +9,7 @@ import ProductCard from "@/components/global/ProductCard"
 import { glasses } from "@/lib/data/productpage"
 import { useTransform, useScroll, motion } from "framer-motion"
 import { useRef } from "react"
+import SkeletonLoaders from "@/components/global/SkeletonLoaders"
 
 type Tab = "Eyewear" | "Phone accessories" | ""
 
@@ -118,6 +119,9 @@ function ProductsPage() {
         <header className="mb-5">
           <h3 className="font-manrope font-semibold">{activeTab}</h3>
         </header>
+        <div className="grid gap-4 md:gap-10 grid-cols-2 md:grid-cols-3 justify-between mb-10">
+          <SkeletonLoaders number={6} />
+        </div>
         <main>
           <ul className="grid gap-3 md:gap-10 grid-cols-2 md:grid-cols-3 justify-between">
             {glasses.map((product) => (
