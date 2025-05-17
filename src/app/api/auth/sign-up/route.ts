@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import { signupSchema } from "@/types/schema"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
 import bcrypt from "bcrypt"
+import { signupSchema } from "@/lib/schemas"
 
 export const POST = async (request: NextRequest) => {
   try {
@@ -16,7 +16,7 @@ export const POST = async (request: NextRequest) => {
     }
     const hashedPassword = await bcrypt.hash(result.data.password, 10)
     const payload = await getPayload({ config: configPromise })
-    
+
     //Todo Handle edgecase where user with the email already exist
     const _res = await payload.create({
       collection: "customers",

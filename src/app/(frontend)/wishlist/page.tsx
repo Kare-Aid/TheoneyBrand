@@ -4,22 +4,32 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { FiChevronRight } from "react-icons/fi"
 import ProductCard from "@/components/global/ProductCard"
+import { useState } from "react"
+
+function ErrorComponent() {
+  throw Error()
+  return <div></div>
+}
 
 function Page() {
   const router = useRouter()
-  function throwError() {
-    throw Error()
-  }
+  const [error, setError] = useState(false)
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
+      {error && <ErrorComponent />}
       <header className="mt-8 mb-14">
         <button
-          className="bg-[#ADC5C2] dark:bg-[#EBEBEB] p-3 rounded-full text-[#242320] mb-3"
+          className="bg-[#ADC5C2] dark:bg-[#EBEBEB] p-3 rounded-full text-[#242320] my-3"
           onClick={router.back}
         >
           <BsArrowLeft size={23} />
         </button>
-        <button onClick={throwError}>Throw error </button>
+        <button
+          onClick={() => setError(true)}
+          className="bg-primary block w-max px-4 py-1 rounded-xl"
+        >
+          Throw error
+        </button>
         <nav className="flex gap-1 items-center text-lg">
           <Link href="#" className="font-manrope font-medium text-black dark:text-white">
             Wishlist

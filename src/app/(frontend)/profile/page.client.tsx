@@ -94,6 +94,9 @@ function Profile() {
                 className="w-full bg-[#FFFFFFCC] border dark:border-0 p-2 rounded-xl outline-none caret-slate-700 text-black"
               />
             </div>
+            <button className="block mx-2 col-span-2 w-full bg-primary text-center text-white md:mx-auto py-3 rounded-full uppercase font-medium">
+              Submit
+            </button>
           </form>
         </div>
       </section>

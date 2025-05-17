@@ -75,6 +75,7 @@ export interface Config {
     variations: Variation;
     stock: Stock;
     carts: Cart;
+    category: Category;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -89,6 +90,7 @@ export interface Config {
     variations: VariationsSelect<false> | VariationsSelect<true>;
     stock: StockSelect<false> | StockSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
+    category: CategorySelect<false> | CategorySelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -183,9 +185,9 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  quantity: number;
   description: string;
   shippingDetails: string;
+  category?: (string | null) | Category;
   images: {
     image: string | Media;
     label: string;
@@ -203,12 +205,27 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  colors?:
+  colors: {
+    color?: (string | null) | Color;
+    id?: string | null;
+  }[];
+  variations?:
     | {
-        color?: (string | null) | Color;
+        variation?: (string | null) | Variation;
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category".
+ */
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -229,7 +246,6 @@ export interface Color {
  */
 export interface Variation {
   id: string;
-  category: 'eyewear' | 'phone_accessories';
   name?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -303,6 +319,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'carts';
         value: string | Cart;
+      } | null)
+    | ({
+        relationTo: 'category';
+        value: string | Category;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -399,9 +419,9 @@ export interface CustomersSelect<T extends boolean = true> {
 export interface ProductsSelect<T extends boolean = true> {
   name?: T;
   price?: T;
-  quantity?: T;
   description?: T;
   shippingDetails?: T;
+  category?: T;
   images?:
     | T
     | {
@@ -427,6 +447,12 @@ export interface ProductsSelect<T extends boolean = true> {
         color?: T;
         id?: T;
       };
+  variations?:
+    | T
+    | {
+        variation?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -445,7 +471,6 @@ export interface ColorsSelect<T extends boolean = true> {
  * via the `definition` "variations_select".
  */
 export interface VariationsSelect<T extends boolean = true> {
-  category?: T;
   name?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -476,6 +501,16 @@ export interface CartsSelect<T extends boolean = true> {
         stock?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category_select".
+ */
+export interface CategorySelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

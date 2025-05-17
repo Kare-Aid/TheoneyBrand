@@ -60,6 +60,7 @@ function AnimatedTestimonials({
                 opacity: 0,
                 scale: 0.9,
                 z: -100,
+                //Todo I'll change the alignment of the back reviews here
                 rotate: randomRotateY(),
               }}
               animate={{
@@ -85,7 +86,9 @@ function AnimatedTestimonials({
                     <IoStar key={index} />
                   ))}
                 </div>
-                <p className="text-xs sm:text-lg max-w-[390px] px-4">{testimonial.quote}</p>
+                <p className="text-sm sm:text-lg text-center max-w-[390px] px-4">
+                  {testimonial.quote}
+                </p>
               </div>
             </motion.li>
           ))}
@@ -108,7 +111,7 @@ function AnimatedTestimonials({
               <IoStar key={index} />
             ))}
           </div>
-          <p className="text-xs sm:text-lg max-w-[390px] px-4">
+          <p className="text-sm text-center sm:text-lg max-w-[390px] px-4">
             {testimonials[active].quote.split(" ").map((word, index) => (
               <motion.span
                 key={index}
