@@ -5,8 +5,8 @@ type Props = { number: number }
 function SkeletonLoaders({ number }: Props) {
   return (
     <Fragment>
-      {Array.from({ length: number }).map((_) => (
-        <div className="sm:max-w-[450px] space-y-1 sm:space-y-2">
+      {Array.from({ length: number }).map((_, index) => (
+        <div className="sm:max-w-[450px] space-y-1 sm:space-y-2" key={index}>
           <div className="bg-slate-400 animate-pulse h-48 sm:h-56 rounded-2xl" />
           <div className="flex justify-between">
             <div className="space-y-1 w-5/12">
