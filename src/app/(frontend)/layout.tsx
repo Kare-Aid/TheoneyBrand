@@ -2,10 +2,11 @@ import React from "react"
 import "./styles.css"
 import { Metadata } from "next"
 import { Manrope, DM_Serif_Display } from "next/font/google"
-import { ThemeProvider } from "@/components/ThemeProvider"
+import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import Footer from "@/components/global/Footer"
 import Navigation from "@/components/global/Navigation"
 import { Toaster } from "sonner"
+import QueryProvider from "@/components/providers/QueryProvider"
 
 const manrope = Manrope({ subsets: ["latin"] })
 const serifDisplay = DM_Serif_Display({
@@ -29,14 +30,16 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       className={`${serifDisplay.className} ${manrope.className}`}
     >
       <body>
-        <ThemeProvider attribute="class">
-          <Toaster richColors position="top-right" />
-          <div className="relative max-w-screen-2xl mx-auto">
-            <Navigation />
-            <main className="font-manrope">{children}</main>
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider attribute="class">
+            <Toaster richColors position="top-right" />
+            <div className="relative max-w-screen-2xl mx-auto">
+              <Navigation />
+              <main className="font-manrope">{children}</main>
+              <Footer />
+            </div>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   )
