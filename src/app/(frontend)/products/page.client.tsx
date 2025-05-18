@@ -10,10 +10,18 @@ import { glasses } from "@/lib/data/productpage"
 import { useTransform, useScroll, motion } from "framer-motion"
 import { useRef } from "react"
 import SkeletonLoaders from "@/components/global/SkeletonLoaders"
+import { Media } from "@/payload-types"
 
 type Tab = "Eyewear" | "Phone accessories" | ""
 
-function ProductsPage() {
+type Category = {
+  id: string
+  name: string
+  slug: string
+  headerImage?: ((string | null) | Media) | undefined
+}
+
+function ProductsPage({ category }: { category: Category[] }) {
   const [activeTab, setActiveTab] = useState<Tab>("")
   const imageURl = activeTab == "Phone accessories" ? "white_woman.jpg" : "succubus.jpg"
   const router = useRouter()
@@ -26,7 +34,7 @@ function ProductsPage() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 2])
 
   useEffect(() => {
-    setTimeout(() => setActiveTab("Eyewear"), 700)
+    setTimeout(() => setActiveTab("Eyewear"), 500)
   }, [])
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">

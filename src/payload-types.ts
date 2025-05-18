@@ -226,6 +226,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  headerImage?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -511,6 +512,7 @@ export interface CartsSelect<T extends boolean = true> {
 export interface CategorySelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  headerImage?: T;
   updatedAt?: T;
   createdAt?: T;
 }
