@@ -2,6 +2,7 @@ import ProductsPage from "./page.client"
 import { Metadata } from "next"
 import configPromise from "@payload-config"
 import { getPayload } from "payload"
+import { notFound } from "next/navigation"
 
 export const metadata: Metadata = {
   title: "Products",
@@ -10,18 +11,17 @@ export const metadata: Metadata = {
 }
 
 export const dynamic = "force-static"
-export const revalidate = 600
+export const revalidate = 60
 
 async function Page() {
   const payload = await getPayload({ config: configPromise })
   const result = await payload.find({
     collection: "category",
     select: { name: true, slug: true, headerImage: true },
+    sort: "createdAt",
   })
-  const categories = result.docs
-  console.log(categories)
-  //Fetch products, render server side with links to single product page and pass data to client components
-  return <ProductsPage category={categories} />
+  if (result.docs.length < 1) notFound()
+  return <ProductsPage categories={result.docs} />
 }
 
 export default Page

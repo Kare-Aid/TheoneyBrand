@@ -5,6 +5,7 @@ import { glasses } from "@/lib/data/productpage"
 import { GoHeart, GoHeartFill } from "react-icons/go"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
+import { truncateText } from "@/lib/util"
 
 type Props = {
   name?: string
@@ -18,9 +19,7 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
   const router = useRouter()
   const glass = glasses[0]
   return (
-    <li
-      className="relative w-full min-h-[350px] sm:max-w-[450px]"
-    >
+    <li className="relative w-full min-h-[350px] sm:max-w-[450px]">
       <button
         className="absolute z-10 right-2 top-2"
         onClick={(e) => {
@@ -49,18 +48,18 @@ function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
         </div>
         <figcaption className="flex flex-wrap items-start justify-between space-y-3">
           <div>
-            <h3 className="font-serifDisplay text-sm">{name ?? glass.name}</h3>
+            <h3 className="font-serifDisplay text-sm">
+              {name ? truncateText(name, 10) : truncateText(glass.name, 10)}
+            </h3>
             <p className="text-xs font-light">{fitsWith ?? glass.fitsWith}</p>
           </div>
           <p className="flex gap-1 md:gap-2 font-semibold">
             <span>₦</span>{" "}
-            <span>{price ? price?.toLocaleString() : glass.price.toLocaleString()}</span>
+            <span>{price ? price.toLocaleString() : glass.price?.toLocaleString()}</span>
           </p>
           <button
             className="bg-primary dark:bg-[#FFFFFF3B] border-0 dark:border border-border w-full relative z-20 text-white py-2 font-semibold rounded-full mb-2"
-            onClick={(e) => {
-              e.stopPropagation()
-            }}
+            onClick={(e) => e.stopPropagation()}
           >
             Add to cart
           </button>

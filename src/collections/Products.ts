@@ -9,6 +9,7 @@ export const Products: CollectionConfig = {
     { name: "description", required: true, type: "textarea" },
     { name: "shippingDetails", type: "textarea", required: true },
     { name: "category", type: "relationship", relationTo: "category" },
+    { name: "fitsWith", type: "text" },
     {
       name: "images",
       type: "array",
@@ -43,7 +44,9 @@ export const Products: CollectionConfig = {
       name: "variations",
       type: "array",
       required: false,
-      fields: [{ name: "variation", type: "relationship", relationTo: 'variations', required: false }],
+      fields: [
+        { name: "variation", type: "relationship", relationTo: "variations", required: false },
+      ],
     },
   ],
 }

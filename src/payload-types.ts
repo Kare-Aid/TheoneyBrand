@@ -188,6 +188,7 @@ export interface Product {
   description: string;
   shippingDetails: string;
   category?: (string | null) | Category;
+  fitsWith?: string | null;
   images: {
     image: string | Media;
     label: string;
@@ -423,6 +424,7 @@ export interface ProductsSelect<T extends boolean = true> {
   description?: T;
   shippingDetails?: T;
   category?: T;
+  fitsWith?: T;
   images?:
     | T
     | {

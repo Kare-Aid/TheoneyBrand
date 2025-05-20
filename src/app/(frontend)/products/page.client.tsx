@@ -5,14 +5,10 @@ import { BsArrowLeft } from "react-icons/bs"
 import Link from "next/link"
 import { FiChevronRight, FiChevronDown } from "react-icons/fi"
 import { useRouter } from "next/navigation"
-import ProductCard from "@/components/global/ProductCard"
-import { glasses } from "@/lib/data/productpage"
 import { useTransform, useScroll, motion } from "framer-motion"
 import { useRef } from "react"
-import SkeletonLoaders from "@/components/global/SkeletonLoaders"
 import { Media } from "@/payload-types"
-
-type Tab = "Eyewear" | "Phone accessories" | ""
+import Products from "./Products"
 
 type Category = {
   id: string
@@ -21,20 +17,19 @@ type Category = {
   headerImage?: ((string | null) | Media) | undefined
 }
 
-function ProductsPage({ category }: { category: Category[] }) {
-  const [activeTab, setActiveTab] = useState<Tab>("")
-  const imageURl = activeTab == "Phone accessories" ? "white_woman.jpg" : "succubus.jpg"
+function ProductsPage({ categories }: { categories: Category[] }) {
+  const [activeTab, setActiveTab] = useState<number | undefined>(undefined)
+  const _index = activeTab ? activeTab : 0
+  const imageURl = (categories[_index].headerImage as Media).url as string
   const router = useRouter()
-
   const headerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: headerRef,
     offset: ["start end", "end start"],
   })
   const y = useTransform(scrollYProgress, [0, 1], [0, 2])
-
   useEffect(() => {
-    setTimeout(() => setActiveTab("Eyewear"), 500)
+    setTimeout(() => setActiveTab(0), 500)
   }, [])
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
@@ -45,10 +40,7 @@ function ProductsPage({ category }: { category: Category[] }) {
         >
           <motion.div
             className="h-full w-full absolute bg-center bg-[length:100%]"
-            style={{
-              backgroundImage: `url("/images/products/${imageURl}")`,
-              scale: y,
-            }}
+            style={{ backgroundImage: `url("${imageURl}")`, scale: y }}
           ></motion.div>
           <div className="absolute inset-0 bg-black/65" />
           <h2 className="text-6xl relative z-20 md:text-8xl text-white font-serifDisplay mx-auto max-w-[800px]">
@@ -60,33 +52,21 @@ function ProductsPage({ category }: { category: Category[] }) {
           aria-label="Tabs container"
           className="font-manrope flex justify-center gap-5 mb-7 text-xl sm:text-base"
         >
-          <div className="relative">
-            <button
-              className={
-                "border-black font-semibold underline-base mb-1 " +
-                (activeTab === "Eyewear"
-                  ? "text-foreground underline-active"
-                  : "border-0 text-[#6D7372] dark:text-[#FFFFFFBD] underline-base")
-              }
-              onClick={() => setActiveTab("Eyewear")}
-            >
-              Eyewear
-            </button>
-          </div>
-
-          <div className="relative">
-            <button
-              className={
-                "border-black font-semibold underline-base mb-1 " +
-                (activeTab === "Phone accessories"
-                  ? "text-foreground underline-active"
-                  : "border-0 text-[#6D7372] dark:text-[#FFFFFFBD] underline-base")
-              }
-              onClick={() => setActiveTab("Phone accessories")}
-            >
-              Phone accessories
-            </button>
-          </div>
+          {categories.map((category, index) => (
+            <div className="relative" key={category.id}>
+              <button
+                className={
+                  "border-black font-semibold underline-base mb-1 " +
+                  (activeTab === index
+                    ? "text-foreground underline-active"
+                    : "border-0 text-[#6D7372] dark:text-[#FFFFFFBD] underline-base")
+                }
+                onClick={() => setActiveTab(index)}
+              >
+                {category.name}
+              </button>
+            </div>
+          ))}
         </div>
 
         <button
@@ -123,21 +103,11 @@ function ProductsPage({ category }: { category: Category[] }) {
         </div>
       </header>
 
-      <section className="mt-10 sm:mt-14">
-        <header className="mb-5">
-          <h3 className="font-manrope font-semibold">{activeTab}</h3>
-        </header>
-        <div className="grid gap-4 md:gap-10 grid-cols-2 md:grid-cols-3 justify-between mb-10">
-          <SkeletonLoaders number={6} />
+      {categories.map((category, index) => (
+        <div key={category.id}>
+          {index == _index && <Products categoryName={category.name} categoryId={category.id} />}
         </div>
-        <main>
-          <ul className="grid gap-3 md:gap-10 grid-cols-2 md:grid-cols-3 justify-between">
-            {glasses.map((product) => (
-              <ProductCard key={Math.random() * 1593948} {...product} />
-            ))}
-          </ul>
-        </main>
-      </section>
+      ))}
     </div>
   )
 }

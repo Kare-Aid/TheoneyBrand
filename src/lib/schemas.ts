@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+// Todo Add min and max to the schema 
 export const signupSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
