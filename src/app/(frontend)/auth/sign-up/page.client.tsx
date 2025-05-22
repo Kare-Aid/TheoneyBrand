@@ -119,7 +119,7 @@ function Signup() {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full h-full rounded-xl bg-transparent outline-none caret-slate-700 text-black"
+              className="w-full h-full bg-transparent outline-none caret-slate-700 text-black"
               {...register("password")}
             />
             {!showPassword ? (

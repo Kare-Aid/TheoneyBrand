@@ -15,6 +15,8 @@ type Props = {
 }
 
 function ProductCard({ name, imageUrl, fitsWith, price }: Props) {
+  // Like status before post request comes back successfully
+  // Default should be the one that comes back from the server or the local storage
   const [like, setLike] = useState(false)
   const router = useRouter()
   const glass = glasses[0]

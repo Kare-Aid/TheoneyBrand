@@ -4,6 +4,6 @@ export const Likes: CollectionConfig = {
   slug: "likes",
   fields: [
     { name: "user", type: "relationship", relationTo: "customers", required: false },
-    { name: "user", relationTo: "users", type: "relationship" },
+    { name: "product", relationTo: "products", type: "relationship" },
   ],
 }

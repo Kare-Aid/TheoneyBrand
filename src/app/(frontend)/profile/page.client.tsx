@@ -5,8 +5,12 @@ import { FiChevronRight } from "react-icons/fi"
 import ProductCard from "@/components/global/ProductCard"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { signOut } from "next-auth/react"
+import { useSession } from "next-auth/react"
 
 function Profile() {
+  const session = useSession()
+  // console.log(session?.data?.user)
   const router = useRouter()
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
@@ -112,6 +116,15 @@ function Profile() {
           <ProductCard />
           <ProductCard />
         </ul>
+
+        <div className="mt-10">
+          <button
+            className="bg-red-600 text-white px-3 py-2 rounded-xl"
+            onClick={() => signOut({ redirect: true, callbackUrl: "/" })}
+          >
+            Sign Out
+          </button>
+        </div>
       </section>
     </div>
   )

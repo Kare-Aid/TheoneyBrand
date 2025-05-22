@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-// Todo Add min and max to the schema 
+// Todo Add min and max to the schema
 export const signupSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
@@ -20,4 +20,9 @@ export const signupSchema = z.object({
       message: "Password must contain at least one special character",
     })
     .regex(/^\S*$/, { message: "No spaces allowed" }),
+})
+
+export const loginSchema = z.object({
+  email: z.string().min(1, "Email address is required").email("Please enter a valid email address"),
+  password: z.string().min(1, "Password is required").max(32, "Maximun of 32 chracters"),
 })

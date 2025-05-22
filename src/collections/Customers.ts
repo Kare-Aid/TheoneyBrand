@@ -9,5 +9,6 @@ export const Customers: CollectionConfig = {
     { name: "lastName", type: "text", required: true },
     { name: "password", type: "text", required: true },
     { name: "address", type: "text" },
+    { name: "phoneNumber", type: "text" },
   ],
 }

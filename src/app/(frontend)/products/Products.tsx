@@ -29,7 +29,7 @@ function Products({ categoryName, categoryId }: { categoryName: string; category
   })
   /*
     If signed in, all likes with your id would be fetched from the server 
-    If not signed in, we fetch it from localStorage 
+    If not signed in, we fetch it from localStorage using zutstand 
     After logging it, we fuse the one in local storage into the server and delete it from local storage 
   */
   return (

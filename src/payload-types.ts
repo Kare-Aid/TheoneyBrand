@@ -76,6 +76,7 @@ export interface Config {
     stock: Stock;
     carts: Cart;
     category: Category;
+    likes: Like;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -91,6 +92,7 @@ export interface Config {
     stock: StockSelect<false> | StockSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
     category: CategorySelect<false> | CategorySelect<true>;
+    likes: LikesSelect<false> | LikesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -174,6 +176,7 @@ export interface Customer {
   lastName: string;
   password: string;
   address?: string | null;
+  phoneNumber?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -206,10 +209,12 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  colors: {
-    color?: (string | null) | Color;
-    id?: string | null;
-  }[];
+  colors?:
+    | {
+        color?: (string | null) | Color;
+        id?: string | null;
+      }[]
+    | null;
   variations?:
     | {
         variation?: (string | null) | Variation;
@@ -285,6 +290,17 @@ export interface Cart {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "likes".
+ */
+export interface Like {
+  id: string;
+  user?: (string | null) | Customer;
+  product?: (string | null) | Product;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -325,6 +341,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'category';
         value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'likes';
+        value: string | Like;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -411,6 +431,7 @@ export interface CustomersSelect<T extends boolean = true> {
   lastName?: T;
   password?: T;
   address?: T;
+  phoneNumber?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -515,6 +536,16 @@ export interface CategorySelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   headerImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "likes_select".
+ */
+export interface LikesSelect<T extends boolean = true> {
+  user?: T;
+  product?: T;
   updatedAt?: T;
   createdAt?: T;
 }
