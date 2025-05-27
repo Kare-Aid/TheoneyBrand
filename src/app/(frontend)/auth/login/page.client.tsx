@@ -10,10 +10,14 @@ import { LuLoaderCircle } from "react-icons/lu"
 import { signIn } from "next-auth/react"
 import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
+import axios from "axios"
+import { useWishlistStore } from "@/lib/store/wishlist"
 
 type LoginSchema = z.infer<typeof loginSchema>
 
 function Login() {
+  const savedLikes = useWishlistStore((state) => state.likes)
+  const deleteAllLikes = useWishlistStore((state) => state.deleteAllLikes)
   const searchParams = useSearchParams()
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
@@ -34,6 +38,12 @@ function Login() {
       const response = await signIn("credentials", { ...data, redirect: false })
       if (response && !response.error) {
         toast.success("Login successful")
+        // Send likes to be appended with userId
+        if (savedLikes.length > 0) {
+          const likeIds = savedLikes.map((like) => like.likeId)
+          axios.patch("/api/wishlist", { likes: likeIds })
+          deleteAllLikes()
+        }
         return router.replace("/profile")
       }
       toast.error("Invalid Email or password")

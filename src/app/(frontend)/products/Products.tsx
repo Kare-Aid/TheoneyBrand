@@ -4,7 +4,9 @@ import SkeletonLoaders from "@/components/global/SkeletonLoaders"
 import ProductCard from "@/components/global/ProductCard"
 import axios from "axios"
 import { PaginatedDocs } from "payload"
-import { Media } from "@/payload-types"
+import { Like, Media, Product } from "@/payload-types"
+import { useWishlistStore } from "@/lib/store/wishlist"
+import { useSession } from "next-auth/react"
 
 type Products = {
   id: string
@@ -18,20 +20,38 @@ type Products = {
   }[]
 }
 
-type Result = { message: string; data: PaginatedDocs<Products> }
+type Products_ = { message: string; data: PaginatedDocs<Products> }
 
-/**Component that displays product according to category */
+type Likes_ = { message: string; data: PaginatedDocs<Like> }
+
+/**Component that displays products according to category */
 function Products({ categoryName, categoryId }: { categoryName: string; categoryId: string }) {
+  const { data } = useSession()
+
   const { data: result, isLoading } = useQuery({
     queryKey: ["products", categoryId],
-    queryFn: () => axios.get<Result>("/api/products?categoryId=" + categoryId),
+    queryFn: () => axios.get<Products_>("/api/products_?categoryId=" + categoryId),
     throwOnError: true,
   })
-  /*
-    If signed in, all likes with your id would be fetched from the server 
-    If not signed in, we fetch it from localStorage using zutstand 
-    After logging it, we fuse the one in local storage into the server and delete it from local storage 
-  */
+
+  const { data: likes, refetch } = useQuery({
+    queryKey: ["wishlist"],
+    queryFn: () => axios.get<Likes_>("/api/wishlist"),
+    enabled: !!data,
+  })
+
+  const savedLikes = useWishlistStore((state) => state.likes)
+
+  function getLikeId(productId: string): string | undefined {
+    const isSavedLike = savedLikes.find((like) => like.productId === productId)?.likeId
+    let isDbLiked
+    if (likes) {
+      isDbLiked = likes?.data.data.docs.find(
+        (like) => (like.product as Product).id == productId,
+      )?.id
+    }
+    return isSavedLike || isDbLiked
+  }
   return (
     <section className="mt-10 sm:mt-14">
       <header className="mb-5">
@@ -55,10 +75,13 @@ function Products({ categoryName, categoryId }: { categoryName: string; category
             {result?.data.data.docs.map((product) => (
               <ProductCard
                 key={product.id}
+                id={product.id}
                 name={product.name}
                 fitsWith={product.fitsWith!}
                 price={product.price}
                 imageUrl={(product.images[0].image as Media).url as string}
+                likeId={getLikeId(product.id)}
+                refetchLikes={refetch}
               />
             ))}
           </ul>

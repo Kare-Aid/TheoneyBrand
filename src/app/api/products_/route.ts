@@ -23,6 +23,7 @@ export const GET = async (request: NextRequest) => {
     const products = await payload.find({
       collection: "products",
       where: { "category.id": { equals: categoryId } },
+      sort: "createdAt",
       select: { name: true, fitsWith: true, price: true, images: true },
     })
     return Response.json({ message: "Success", data: products }, { status: 200 })

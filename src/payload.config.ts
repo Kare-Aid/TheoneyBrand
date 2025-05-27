@@ -17,6 +17,7 @@ import { Stock } from "./collections/Stock"
 import { Cart } from "./collections/Cart"
 import { Category } from "./collections/Category"
 import { Likes } from "./collections/Likes"
+import { Reviews } from "./collections/Reviews"
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -30,15 +31,16 @@ export default buildConfig({
   },
   collections: [
     Users,
-    Media,
     Customers,
-    Products,
+    Media,
     Colors,
     Variations,
+    Category,
+    Products,
     Stock,
     Cart,
-    Category,
     Likes,
+    Reviews,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

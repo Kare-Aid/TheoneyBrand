@@ -26,3 +26,12 @@ export const loginSchema = z.object({
   email: z.string().min(1, "Email address is required").email("Please enter a valid email address"),
   password: z.string().min(1, "Password is required").max(32, "Maximun of 32 chracters"),
 })
+
+// Todo Add min and max to the schema
+export const profileSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  phoneNumber: z.string(),
+  address: z.string(),
+})

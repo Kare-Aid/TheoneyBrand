@@ -68,15 +68,16 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
-    media: Media;
     customers: Customer;
-    products: Product;
+    media: Media;
     colors: Color;
     variations: Variation;
+    category: Category;
+    products: Product;
     stock: Stock;
     carts: Cart;
-    category: Category;
     likes: Like;
+    reviews: Review;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -84,15 +85,16 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
-    media: MediaSelect<false> | MediaSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
-    products: ProductsSelect<false> | ProductsSelect<true>;
+    media: MediaSelect<false> | MediaSelect<true>;
     colors: ColorsSelect<false> | ColorsSelect<true>;
     variations: VariationsSelect<false> | VariationsSelect<true>;
+    category: CategorySelect<false> | CategorySelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
     stock: StockSelect<false> | StockSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
-    category: CategorySelect<false> | CategorySelect<true>;
     likes: LikesSelect<false> | LikesSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -148,6 +150,21 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  address?: string | null;
+  phoneNumber?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -167,16 +184,34 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers".
+ * via the `definition` "colors".
  */
-export interface Customer {
+export interface Color {
   id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-  address?: string | null;
-  phoneNumber?: string | null;
+  name: string;
+  hexCode: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "variations".
+ */
+export interface Variation {
+  id: string;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category".
+ */
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  headerImage?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -199,13 +234,13 @@ export interface Product {
   }[];
   details?:
     | {
-        detail: string;
+        detail?: string | null;
         id?: string | null;
       }[]
     | null;
   care?:
     | {
-        care: string;
+        care?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -221,39 +256,6 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "category".
- */
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  headerImage?: (string | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "colors".
- */
-export interface Color {
-  id: string;
-  name: string;
-  hexCode: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "variations".
- */
-export interface Variation {
-  id: string;
-  name?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -301,6 +303,18 @@ export interface Like {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: string;
+  rating: number;
+  user: string | Customer;
+  product: string | Product;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -311,16 +325,12 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
-        relationTo: 'media';
-        value: string | Media;
-      } | null)
-    | ({
         relationTo: 'customers';
         value: string | Customer;
       } | null)
     | ({
-        relationTo: 'products';
-        value: string | Product;
+        relationTo: 'media';
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'colors';
@@ -331,6 +341,14 @@ export interface PayloadLockedDocument {
         value: string | Variation;
       } | null)
     | ({
+        relationTo: 'category';
+        value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
         relationTo: 'stock';
         value: string | Stock;
       } | null)
@@ -339,12 +357,12 @@ export interface PayloadLockedDocument {
         value: string | Cart;
       } | null)
     | ({
-        relationTo: 'category';
-        value: string | Category;
-      } | null)
-    | ({
         relationTo: 'likes';
         value: string | Like;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: string | Review;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -405,6 +423,20 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  firstName?: T;
+  lastName?: T;
+  password?: T;
+  address?: T;
+  phoneNumber?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -423,15 +455,31 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "customers_select".
+ * via the `definition` "colors_select".
  */
-export interface CustomersSelect<T extends boolean = true> {
-  email?: T;
-  firstName?: T;
-  lastName?: T;
-  password?: T;
-  address?: T;
-  phoneNumber?: T;
+export interface ColorsSelect<T extends boolean = true> {
+  name?: T;
+  hexCode?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "variations_select".
+ */
+export interface VariationsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "category_select".
+ */
+export interface CategorySelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  headerImage?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -482,25 +530,6 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "colors_select".
- */
-export interface ColorsSelect<T extends boolean = true> {
-  name?: T;
-  hexCode?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "variations_select".
- */
-export interface VariationsSelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "stock_select".
  */
 export interface StockSelect<T extends boolean = true> {
@@ -530,20 +559,20 @@ export interface CartsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "category_select".
+ * via the `definition` "likes_select".
  */
-export interface CategorySelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  headerImage?: T;
+export interface LikesSelect<T extends boolean = true> {
+  user?: T;
+  product?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "likes_select".
+ * via the `definition` "reviews_select".
  */
-export interface LikesSelect<T extends boolean = true> {
+export interface ReviewsSelect<T extends boolean = true> {
+  rating?: T;
   user?: T;
   product?: T;
   updatedAt?: T;

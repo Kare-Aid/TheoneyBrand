@@ -26,6 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             limit: 1,
             where: { email: { equals: email } },
             collection: "customers",
+            overrideAccess: true,
             select: { firstName: true, lastName: true, email: true, password: true },
           })
           if (query.docs.length < 1) return null

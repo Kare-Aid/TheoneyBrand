@@ -7,9 +7,10 @@ type WishlistStore = {
   likes: Like[]
   addNewLike: (like: Like) => void
   removeLike: (likeId: string) => void
+  deleteAllLikes: () => void
 }
 
-export const wishlistStore = create<WishlistStore>()(
+export const useWishlistStore = create<WishlistStore>()(
   persist(
     (set) => ({
       likes: [],
@@ -20,7 +21,8 @@ export const wishlistStore = create<WishlistStore>()(
           return { likes }
         })
       },
+      deleteAllLikes: () => set((state) => ({ likes: [] })),
     }),
-    { name: "wishlist", storage: createJSONStorage(() => localStorage) },
+    { name: "theoney-wishlist", storage: createJSONStorage(() => localStorage) },
   ),
 )

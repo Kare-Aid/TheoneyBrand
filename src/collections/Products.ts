@@ -27,25 +27,22 @@ export const Products: CollectionConfig = {
     {
       name: "details",
       type: "array",
-      fields: [{ name: "detail", type: "text", required: true }],
+      fields: [{ name: "detail", type: "text" }],
     },
     {
       name: "care",
       type: "array",
-      fields: [{ name: "care", type: "text", required: true }],
+      fields: [{ name: "care", type: "text" }],
     },
     {
       name: "colors",
       type: "array",
-      fields: [{ name: "color", type: "relationship", relationTo: "colors", required: false }],
+      fields: [{ name: "color", type: "relationship", relationTo: "colors" }],
     },
     {
       name: "variations",
       type: "array",
-      required: false,
-      fields: [
-        { name: "variation", type: "relationship", relationTo: "variations", required: false },
-      ],
+      fields: [{ name: "variation", type: "relationship", relationTo: "variations" }],
     },
   ],
 }
