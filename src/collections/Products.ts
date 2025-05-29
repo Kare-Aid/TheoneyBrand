@@ -35,14 +35,17 @@ export const Products: CollectionConfig = {
       fields: [{ name: "care", type: "text" }],
     },
     {
-      name: "colors",
-      type: "array",
-      fields: [{ name: "color", type: "relationship", relationTo: "colors" }],
-    },
-    {
-      name: "variations",
-      type: "array",
-      fields: [{ name: "variation", type: "relationship", relationTo: "variations" }],
+      name: "relatedProducts",
+      type: "relationship",
+      relationTo: "products",
+      hasMany: true,
+      filterOptions: ({ id }) => {
+        return {
+          id: {
+            not_in: [id],
+          },
+        }
+      },
     },
   ],
 }

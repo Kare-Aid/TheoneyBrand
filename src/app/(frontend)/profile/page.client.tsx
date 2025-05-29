@@ -11,11 +11,34 @@ import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { PaginatedDocs } from "payload"
-import { Media } from "@/payload-types"
+import { Media, Customer } from "@/payload-types"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { profileSchema } from "@/lib/schemas"
+import { toast } from "sonner"
+import { LuLoaderCircle } from "react-icons/lu"
+
+type UpdateProfileResponse = {
+  message: string
+  data: {
+    docs: [
+      {
+        email: string
+        firstName: string
+        lastName: string
+        address: string
+        phoneNumber: string
+      },
+    ]
+    errors: []
+  }
+}
+
+type ProfileResponse = {
+  message: string
+  data: Customer
+}
 
 type Product = {
   id: string
@@ -38,6 +61,7 @@ type Likes_ = { message: string; data: PaginatedDocs<Like> }
 
 type ProfileSchema = z.infer<typeof profileSchema>
 
+/**Update profile client component */
 function Profile() {
   const {
     data: response,
@@ -48,23 +72,52 @@ function Profile() {
     queryFn: () => axios.get<Likes_>("/api/wishlist"),
   })
 
-  const { data } = useSession()
+  // Abstract this out
+  const { data: profileResponse, refetch: refetchProfile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => axios.get<ProfileResponse>("/api/profile"),
+  })
 
-  const { reset, register, handleSubmit } = useForm<ProfileSchema>({
+  const { data: userSession, update } = useSession()
+
+  const {
+    reset,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ProfileSchema>({
     resolver: zodResolver(profileSchema),
   })
 
   useEffect(() => {
-    if (data) {
+    if (userSession || profileResponse) {
       reset({
-        firstName: data?.user.name?.split(" ")[0],
-        lastName: data?.user.name?.split(" ")[1],
-        email: data.user.email || "",
+        firstName: userSession?.user.name?.split(" ")[0],
+        lastName: userSession?.user.name?.split(" ")[1],
+        email: userSession?.user.email || "",
+        phoneNumber: profileResponse?.data.data.phoneNumber || "",
+        address: profileResponse?.data.data.address || "",
       })
     }
-  }, [data])
+  }, [userSession, profileResponse])
 
-  const onSubmit: SubmitHandler<ProfileSchema> = (data) => {}
+  const onSubmit: SubmitHandler<ProfileSchema> = async (payload) => {
+    try {
+      const { data } = await axios.patch<UpdateProfileResponse>("/api/profile", payload)
+      refetchProfile()
+      const { email, firstName, lastName } = data.data.docs[0]
+      if (!userSession) return
+      const user = userSession?.user
+      user.email = email
+      user.firstName = firstName
+      user.lastName = lastName
+      await update({ ...user })
+      toast.success("Profile update successful")
+    } catch (error) {
+      console.error(error)
+      toast.error("Could not update profile, please try againa later")
+    }
+  }
 
   const router = useRouter()
   return (
@@ -105,6 +158,11 @@ function Profile() {
                 className="w-full bg-[#FFFFFFCC] border dark:border-0 p-2 rounded-xl outline-none caret-slate-700 text-black"
                 {...register("firstName")}
               />
+              {errors.firstName && (
+                <p className="text-sm mt-1 text-red-500 dark:text-red-700">
+                  {errors.firstName.message}
+                </p>
+              )}
             </div>
             <div className="col-span-2 sm:col-span-1">
               <label
@@ -119,6 +177,11 @@ function Profile() {
                 className="w-full bg-[#FFFFFFCC] border dark:border-0 p-2 rounded-xl outline-none caret-slate-700 text-black"
                 {...register("lastName")}
               />
+              {errors.lastName && (
+                <p className="text-sm mt-1 text-red-500 dark:text-red-700">
+                  {errors.lastName.message}
+                </p>
+              )}
             </div>
             <div className="col-span-2 sm:col-span-1">
               <label
@@ -133,6 +196,11 @@ function Profile() {
                 className="w-full bg-[#FFFFFFCC] border dark:border-0 p-2 rounded-xl outline-none caret-slate-700 text-black"
                 {...register("email")}
               />
+              {errors.email && (
+                <p className="text-sm mt-1 text-red-500 dark:text-red-700">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
             <div className="col-span-2 sm:col-span-1">
               <label
@@ -147,6 +215,11 @@ function Profile() {
                 className="w-full bg-[#FFFFFFCC] border dark:border-0 p-2 rounded-xl outline-none caret-slate-700 text-black"
                 {...register("phoneNumber")}
               />
+              {errors.phoneNumber && (
+                <p className="text-sm mt-1 text-red-500 dark:text-red-700">
+                  {errors.phoneNumber.message}
+                </p>
+              )}
             </div>
             <div className="col-span-2">
               <label
@@ -161,9 +234,21 @@ function Profile() {
                 className="w-full bg-[#FFFFFFCC] border dark:border-0 p-2 rounded-xl outline-none caret-slate-700 text-black"
                 {...register("address")}
               />
+              {errors.address && (
+                <p className="text-sm mt-1 text-red-500 dark:text-red-700">
+                  {errors.address.message}
+                </p>
+              )}
             </div>
-            <button className="block mx-auto col-span-2 w-full bg-primary text-center text-white md:mx-auto py-3 rounded-full uppercase font-medium">
-              Submit
+            <button
+              disabled={isSubmitting}
+              className="block mx-auto col-span-2 w-full bg-primary text-center text-white md:mx-auto py-3 rounded-full uppercase font-medium"
+            >
+              {isSubmitting ? (
+                <LuLoaderCircle size={22} className="animate-spin mx-auto" />
+              ) : (
+                "Submit"
+              )}
             </button>
           </form>
         </div>

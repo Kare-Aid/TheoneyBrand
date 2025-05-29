@@ -22,7 +22,7 @@ const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
 
 type ImagePosition = "Front" | "Back" | "Side"
 
-function SingleProductPage({ product }: { product: Product }) {
+function PhoneAccessory({ product }: { product: Product }) {
   const router = useRouter()
 
   const { data: likes } = useProfileWishList()
@@ -366,4 +366,4 @@ function SingleProductPage({ product }: { product: Product }) {
   )
 }
 
-export default SingleProductPage
+export default PhoneAccessory

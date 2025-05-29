@@ -41,6 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return rest
         } catch (error: unknown) {
+          console.error({['Error while signing in']: error})
           return null
         }
       },
@@ -52,7 +53,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     //   if (account?.provider === 'credentials') return true;
     //   return false;
     // },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update") {
+        token.name = `${session.firstName} ${session.lastName}`
+        token.email = session.email
+        token.firstName = session.firstName
+        token.lastName = session.lastName
+      }
       if (user) {
         token.name = `${user.firstName} ${user.lastName}`
       }

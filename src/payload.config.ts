@@ -18,6 +18,7 @@ import { Cart } from "./collections/Cart"
 import { Category } from "./collections/Category"
 import { Likes } from "./collections/Likes"
 import { Reviews } from "./collections/Reviews"
+import { CartItem } from "./collections/CartItem"
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -39,6 +40,7 @@ export default buildConfig({
     Products,
     Stock,
     Cart,
+    CartItem,
     Likes,
     Reviews,
   ],

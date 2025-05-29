@@ -14,16 +14,15 @@ export const GET = async (request: NextRequest) => {
     )
   }
   try {
-    // const payload = await getPayload({ config: configPromise })
-    // const updatedDoc = await payload.find({
-    //   collection: "customers",
-    //   where: { id: { equals: session.user.id } },
-    // })
-    // console.log(updatedDoc)
-    // return Response.json(
-    //   { message: "Profile update successful", data: updatedDoc },
-    //   { status: 200 },
-    // )
+    const payload = await getPayload({ config: configPromise })
+    const user = await payload.findByID({
+      collection: "customers",
+      id: session.user.id,
+    })
+    if (!user) {
+      return Response.json({ error: "Not found", message: "User not found" }, { status: 404 })
+    }
+    return Response.json({ message: "Success", data: user }, { status: 200 })
   } catch (error) {
     console.error(error)
     return Response.json(

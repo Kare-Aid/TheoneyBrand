@@ -76,6 +76,7 @@ export interface Config {
     products: Product;
     stock: Stock;
     carts: Cart;
+    'cart-items': CartItem;
     likes: Like;
     reviews: Review;
     'payload-locked-documents': PayloadLockedDocument;
@@ -93,6 +94,7 @@ export interface Config {
     products: ProductsSelect<false> | ProductsSelect<true>;
     stock: StockSelect<false> | StockSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
+    'cart-items': CartItemsSelect<false> | CartItemsSelect<true>;
     likes: LikesSelect<false> | LikesSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -244,18 +246,7 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  colors?:
-    | {
-        color?: (string | null) | Color;
-        id?: string | null;
-      }[]
-    | null;
-  variations?:
-    | {
-        variation?: (string | null) | Variation;
-        id?: string | null;
-      }[]
-    | null;
+  relatedProducts?: (string | Product)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -280,13 +271,18 @@ export interface Cart {
   id: string;
   user?: (string | null) | Customer;
   purchased?: boolean | null;
-  items?:
-    | {
-        quantity: number;
-        stock?: (string | null) | Stock;
-        id?: string | null;
-      }[]
-    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cart-items".
+ */
+export interface CartItem {
+  id: string;
+  cart: string | Cart;
+  stock: string | Stock;
+  quantity: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -355,6 +351,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'carts';
         value: string | Cart;
+      } | null)
+    | ({
+        relationTo: 'cart-items';
+        value: string | CartItem;
       } | null)
     | ({
         relationTo: 'likes';
@@ -513,18 +513,7 @@ export interface ProductsSelect<T extends boolean = true> {
         care?: T;
         id?: T;
       };
-  colors?:
-    | T
-    | {
-        color?: T;
-        id?: T;
-      };
-  variations?:
-    | T
-    | {
-        variation?: T;
-        id?: T;
-      };
+  relatedProducts?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -547,13 +536,17 @@ export interface StockSelect<T extends boolean = true> {
 export interface CartsSelect<T extends boolean = true> {
   user?: T;
   purchased?: T;
-  items?:
-    | T
-    | {
-        quantity?: T;
-        stock?: T;
-        id?: T;
-      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cart-items_select".
+ */
+export interface CartItemsSelect<T extends boolean = true> {
+  cart?: T;
+  stock?: T;
+  quantity?: T;
   updatedAt?: T;
   createdAt?: T;
 }

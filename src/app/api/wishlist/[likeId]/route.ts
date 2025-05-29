@@ -2,8 +2,6 @@ import { NextRequest } from "next/server"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
 
-type Params = { params: { likeId: string } }
-
 //Delete route for a like
 export const DELETE = async (
   request: NextRequest,

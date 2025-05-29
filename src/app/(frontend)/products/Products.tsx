@@ -4,9 +4,9 @@ import SkeletonLoaders from "@/components/global/SkeletonLoaders"
 import ProductCard from "@/components/global/ProductCard"
 import axios from "axios"
 import { PaginatedDocs } from "payload"
-import { Like, Media, Product } from "@/payload-types"
+import { Media, Product } from "@/payload-types"
 import { useWishlistStore } from "@/lib/store/wishlist"
-import { useSession } from "next-auth/react"
+import { useProfileWishList } from "@/lib/queries"
 
 type Products = {
   id: string
@@ -22,23 +22,15 @@ type Products = {
 
 type Products_ = { message: string; data: PaginatedDocs<Products> }
 
-type Likes_ = { message: string; data: PaginatedDocs<Like> }
-
 /**Component that displays products according to category */
 function Products({ categoryName, categoryId }: { categoryName: string; categoryId: string }) {
-  const { data } = useSession()
-
   const { data: result, isLoading } = useQuery({
     queryKey: ["products", categoryId],
     queryFn: () => axios.get<Products_>("/api/products_?categoryId=" + categoryId),
     throwOnError: true,
   })
 
-  const { data: likes, refetch } = useQuery({
-    queryKey: ["wishlist"],
-    queryFn: () => axios.get<Likes_>("/api/wishlist"),
-    enabled: !!data,
-  })
+  const { data: likes } = useProfileWishList()
 
   const savedLikes = useWishlistStore((state) => state.likes)
 
@@ -81,7 +73,6 @@ function Products({ categoryName, categoryId }: { categoryName: string; category
                 price={product.price}
                 imageUrl={(product.images[0].image as Media).url as string}
                 likeId={getLikeId(product.id)}
-                refetchLikes={refetch}
               />
             ))}
           </ul>

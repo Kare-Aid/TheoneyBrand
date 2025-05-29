@@ -29,9 +29,12 @@ export const loginSchema = z.object({
 
 // Todo Add min and max to the schema
 export const profileSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
-  email: z.string().email(),
-  phoneNumber: z.string(),
-  address: z.string(),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().min(1, "Email address is required").email("Please enter a valid email address"),
+  phoneNumber: z
+    .string()
+    .min(1, "Please enter your phone number")
+    .min(11, "Please enter a valid phone number"),
+  address: z.string().min(1, "Please enter your shipping address"),
 })
