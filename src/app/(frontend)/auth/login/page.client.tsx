@@ -12,12 +12,14 @@ import { toast } from "sonner"
 import { useRouter, useSearchParams } from "next/navigation"
 import axios from "axios"
 import { useWishlistStore } from "@/lib/store/wishlist"
+import { useCartStore } from "@/lib/store/cart"
 
 type LoginSchema = z.infer<typeof loginSchema>
 
 function Login() {
   const savedLikes = useWishlistStore((state) => state.likes)
   const deleteAllLikes = useWishlistStore((state) => state.deleteAllLikes)
+  const { cartId, setCartId } = useCartStore()
   const searchParams = useSearchParams()
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
@@ -41,8 +43,15 @@ function Login() {
         // Send likes to be appended with userId
         if (savedLikes.length > 0) {
           const likeIds = savedLikes.map((like) => like.likeId)
+          //! Todo Error handling
           axios.patch("/api/wishlist", { likes: likeIds })
+          //Todo Invalidate wishlist query if refetch is disabled
           deleteAllLikes()
+        }
+        if (cartId) {
+          //! Todo Error handling
+          axios.patch("/api/cart_", { cartId })
+          setCartId("")
         }
         return router.replace("/profile")
       }

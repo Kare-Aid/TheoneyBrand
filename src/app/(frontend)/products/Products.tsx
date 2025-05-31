@@ -4,9 +4,9 @@ import SkeletonLoaders from "@/components/global/SkeletonLoaders"
 import ProductCard from "@/components/global/ProductCard"
 import axios from "axios"
 import { PaginatedDocs } from "payload"
-import { Media, Product } from "@/payload-types"
+import { Media, Product, Stock } from "@/payload-types"
 import { useWishlistStore } from "@/lib/store/wishlist"
-import { useProfileWishList } from "@/lib/queries"
+import { useProfileWishList, useCartItems } from "@/lib/queries"
 
 type Products = {
   id: string
@@ -30,9 +30,19 @@ function Products({ categoryName, categoryId }: { categoryName: string; category
     throwOnError: true,
   })
 
+  const { data: response } = useCartItems()
+
   const { data: likes } = useProfileWishList()
 
   const savedLikes = useWishlistStore((state) => state.likes)
+
+  function checkProductInCart(productId: string): boolean {
+    if (!response) return false
+    const product = response.data.data.find((cart) => {
+      return ((cart.stock as Stock).product as Product).id == productId
+    })
+    return Boolean(product)
+  }
 
   function getLikeId(productId: string): string | undefined {
     const isSavedLike = savedLikes.find((like) => like.productId === productId)?.likeId
@@ -73,6 +83,7 @@ function Products({ categoryName, categoryId }: { categoryName: string; category
                 price={product.price}
                 imageUrl={(product.images[0].image as Media).url as string}
                 likeId={getLikeId(product.id)}
+                addedToCart={checkProductInCart(product.id)}
               />
             ))}
           </ul>

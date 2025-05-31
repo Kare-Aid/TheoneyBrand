@@ -38,3 +38,12 @@ export const profileSchema = z.object({
     .min(11, "Please enter a valid phone number"),
   address: z.string().min(1, "Please enter your shipping address"),
 })
+
+export const addCartSchema = z.object({
+  productId: z.string().min(20).max(36).optional(),
+  stockId: z.string().min(20).max(36).optional(),
+  quantity: z.coerce.number().optional(),
+  cartId: z.string().optional(),
+})
+
+export type AddToCartPayload = z.infer<typeof addCartSchema>

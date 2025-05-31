@@ -1,5 +1,4 @@
 import React from "react"
-import SingleProductPage from "./page.client"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
 import { Metadata } from "next"

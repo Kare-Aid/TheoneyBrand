@@ -1,21 +1,24 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { PaginatedDocs } from "payload"
-import { Like } from "@/payload-types"
+import { Like, Cart, Stock, CartItem } from "@/payload-types"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { useWishlistStore } from "./store/wishlist"
 import { truncateText } from "@/lib/util"
+import { useCartStore } from "./store/cart"
+import { AddToCartPayload } from "./schemas"
 
 type Likes_ = { message: string; data: PaginatedDocs<Like> }
 
+//Todo Disable refetch except when query imvalidated, Disable like button when like query is still fetching
 /**Query hook to fetch all likes for a user */
 export const useProfileWishList = () => {
   const { data } = useSession()
   return useQuery({
     queryKey: ["wishlist"],
     queryFn: () => axios.get<Likes_>("/api/wishlist"),
-    enabled: !!data
+    enabled: !!data,
   })
 }
 
@@ -63,5 +66,59 @@ export const useUnlikeMutation = (productName: string) => {
     onError: () => {
       toast.error("Could not remove product from wishlist")
     },
+  })
+}
+
+type AddCartResponse = {
+  message: string
+  data: {
+    user: {} | null
+    id: string
+    cart: string | Cart
+    stock: string | Stock
+    quantity: number
+    updatedAt: string
+    createdAt: string
+  }
+}
+
+/**Mutation hook to add product to cart */
+export const useAddToCart = () => {
+  const queryClient = useQueryClient()
+  const { cartId, setCartId } = useCartStore()
+  return useMutation({
+    mutationFn: ({ productId, stockId, quantity }: AddToCartPayload) => {
+      return axios.post<AddCartResponse>("/api/cart_", { cartId, productId, stockId, quantity })
+    },
+    onSuccess: (response) => {
+      toast.success("Product added to cart")
+      if (!response.data.data.user && !cartId) {
+        setCartId((response.data.data.cart as Cart).id)
+      }
+      // Invalidate query irrespective of signed-in status
+      queryClient.invalidateQueries({ queryKey: ["cart"] })
+    },
+    onError: () => {
+      toast.error("Could not add product to cart")
+    },
+  })
+}
+
+type CartItemsResult = { message: string; data: CartItem[] }
+
+export const useCartItems = () => {
+  const cartId = useCartStore((state) => state.cartId)
+  return useQuery({
+    queryKey: ["cart"],
+    queryFn: () => axios.get<CartItemsResult>(`/api/cart_?${cartId ? "cartId=" + cartId : ""}`),
+  })
+}
+
+type StockResult = { message: string; data: Stock[] }
+
+export const useStock = (productId: string) => {
+  return useQuery({
+    queryKey: ["stock", productId],
+    queryFn: () => axios.get<StockResult>("/api/stocks?productId=" + productId),
   })
 }

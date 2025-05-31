@@ -8,22 +8,27 @@ import { useState } from "react"
 import AccordionItem from "@/components/ui/AccordionItem"
 import { IoIosStar } from "react-icons/io"
 import { genID } from "@/lib/util"
-import { phoneCaseVariations } from "@/lib/data/singleProduct"
 import ProductCard from "@/components/global/ProductCard"
 import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
-import { Category, Media, Product } from "@/payload-types"
-import { useProfileWishList } from "@/lib/queries"
+import { Category, Color, Media, Product, Stock } from "@/payload-types"
+import { useProfileWishList, useStock } from "@/lib/queries"
 import { useWishlistStore } from "@/lib/store/wishlist"
 import { useLikeMutation, useUnlikeMutation } from "@/lib/queries"
 import { FaCamera } from "react-icons/fa"
+import { toast } from "sonner"
+import { useAddToCart } from "@/lib/queries"
 
+//@ts-ignore
 const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
 
 type ImagePosition = "Front" | "Back" | "Side"
 
 function Eyewear({ product }: { product: Product }) {
   const router = useRouter()
+
+  const [quantity, setQuantity] = useState(1)
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
 
   const { data: likes } = useProfileWishList()
 
@@ -32,6 +37,10 @@ function Eyewear({ product }: { product: Product }) {
   const { isPending: isUnliking, mutate } = useUnlikeMutation(product.name)
 
   const savedLikes = useWishlistStore((state) => state.likes)
+
+  const { data: stockResponse, isLoading: isLoadingStock } = useStock(product.id)
+
+  const { mutateAsync: addStockToCart } = useAddToCart()
 
   function getLikeId(productId: string): string | undefined {
     const isSavedLike = savedLikes.find((like) => like.productId === productId)?.likeId
@@ -44,8 +53,17 @@ function Eyewear({ product }: { product: Product }) {
     return isSavedLike || isDbLiked
   }
   const category = (product.category as Category)?.name as string
-  const [currentVariation, setCurrentVariation] = useState("")
+
   const [currentAngle, setCurrentAngle] = useState<ImagePosition>("Front")
+
+  async function addToCart() {
+    if (!selectedStock) {
+      toast.warning("Please select a color")
+      return
+    }
+    await addStockToCart({ stockId: selectedStock.id, quantity })
+    toast.success("Added to cart")
+  }
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
       <nav className="my-4 sm:my-6">
@@ -202,44 +220,67 @@ function Eyewear({ product }: { product: Product }) {
           </section>
           <div className="">
             <p className="mb-3 font-medium">Colors</p>
-            <ul className="flex items-center gap-1 mb-5">
-              {colors.map((color) => (
-                <li key={color}>
-                  <button
-                    style={{ backgroundColor: color }}
-                    className={
-                      "size-6 rounded-full " +
-                      (color === "#020A1B" && "dark:border border-border ") +
-                      (color === "#ffffff" && "border-black border")
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
 
-            <ul className="flex gap-2 flex-wrap mb-10" aria-label="List of case variations">
-              {phoneCaseVariations.map((variation) => (
-                <li key={genID()}>
-                  <button
-                    onClick={() => setCurrentVariation(variation)}
-                    className={
-                      "border border-border px-3 py-1 rounded-full " +
-                      (currentVariation == variation ? "bg-primary text-white" : "")
-                    }
-                  >
-                    {variation}
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {isLoadingStock && (
+              <ul className="flex items-center gap-1 mb-5">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <div className="size-6 bg-slate-400 animate-pulse rounded-full" key={index} />
+                ))}
+              </ul>
+            )}
+
+            {stockResponse && (
+              <ul className="flex items-center gap-1 mb-5">
+                {stockResponse.data.data.map((stock) => {
+                  const color = (stock.color as Color).hexCode
+                  return (
+                    <li
+                      key={stock.id}
+                      onClick={() => {
+                        setSelectedStock(stock)
+                        setQuantity(1)
+                      }}
+                    >
+                      <button
+                        style={{ backgroundColor: color }}
+                        className={
+                          "size-6 sm:size-7 rounded-full " +
+                          (color === "#020A1B" && "dark:border border-border ") +
+                          (color === "#ffffff" && "border-black border")
+                        }
+                      />
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
 
             <section className="flex flex-col lg:flex-row gap-2 mb-10">
               <div className="flex justify-around items-center gap-4 rounded-full border border-border px-3 py-1">
-                <button className="text-2xl">-</button>
-                <p className="px-5 text-center">1</p>
-                <button className="text-2xl">+</button>
+                <button
+                  className="text-2xl"
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                >
+                  -
+                </button>
+                <p className="px-5 text-center">{quantity}</p>
+                <button
+                  className="text-2xl"
+                  onClick={() => {
+                    if (!selectedStock) {
+                      toast.warning("Please select a color")
+                      return
+                    }
+                    setQuantity((prev) => Math.min(selectedStock.quantity, prev + 1))
+                  }}
+                >
+                  +
+                </button>
               </div>
-              <button className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full w-full lg:w-max">
+              <button
+                className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full w-full lg:w-max"
+                onClick={addToCart}
+              >
                 Add to cart
               </button>
               <button className="text-primary bg-[#E2EFED]  border border-primary px-10 py-2 rounded-full w-full lg:w-max font-medium">

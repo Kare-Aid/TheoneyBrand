@@ -2,10 +2,12 @@ import { IoCloseCircleOutline } from "react-icons/io5"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
+import { useMutation } from "@tanstack/react-query"
 
 type Props = { showCart: boolean; closeCart: () => void }
 
 function Cart({ showCart, closeCart }: Props) {
+  const {} = useMutation({})
   return (
     <AnimatePresence>
       {showCart && (
