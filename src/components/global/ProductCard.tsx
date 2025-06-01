@@ -20,7 +20,8 @@ type Props = {
 }
 
 //Todo Use ID with toast to show loading indicator for liking and uniking product
-// ID will be tracked with state and updated when it's successful or failed
+//ID will be tracked with state and updated when it's successful or failed
+//Todo Redirect users to product page when they click on add to cart if product is a phone accessory
 function ProductCard({ id, name, imageUrl, fitsWith, price, likeId, addedToCart }: Props) {
   const router = useRouter()
 

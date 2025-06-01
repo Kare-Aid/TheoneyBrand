@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@jhb.software/payload-cloudinary-plugin": "^0.2.1",
     "@payloadcms/db-mongodb": "3.31.0",
     "@payloadcms/next": "3.31.0",
     "@payloadcms/payload-cloud": "3.31.0",

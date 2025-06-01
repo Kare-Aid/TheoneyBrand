@@ -285,7 +285,6 @@ function Profile() {
                 fitsWith={like.product.fitsWith!}
                 price={like.product.price}
                 likeId={like.id}
-                refetchLikes={refetch}
                 imageUrl={(like.product.images[0].image as Media).url as string}
               />
             ))}

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import axios, { AxiosError } from "axios"
 import { PaginatedDocs } from "payload"
 import { Like, Cart, Stock, CartItem } from "@/payload-types"
 import { useSession } from "next-auth/react"
@@ -11,7 +11,7 @@ import { AddToCartPayload } from "./schemas"
 
 type Likes_ = { message: string; data: PaginatedDocs<Like> }
 
-//Todo Disable refetch except when query imvalidated, Disable like button when like query is still fetching
+//Todo Disable refetch except when query invalidated, Disable like button when like query is still fetching
 /**Query hook to fetch all likes for a user */
 export const useProfileWishList = () => {
   const { data } = useSession()
@@ -98,8 +98,8 @@ export const useAddToCart = () => {
       // Invalidate query irrespective of signed-in status
       queryClient.invalidateQueries({ queryKey: ["cart"] })
     },
-    onError: () => {
-      toast.error("Could not add product to cart")
+    onError: (error: AxiosError<{ message: string }>) => {
+      toast.error(error.response?.data.message || "Could not add product to cart")
     },
   })
 }

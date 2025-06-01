@@ -1,12 +1,12 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from "@payloadcms/db-mongodb"
-import { payloadCloudPlugin } from "@payloadcms/payload-cloud"
 import { lexicalEditor } from "@payloadcms/richtext-lexical"
 import path from "path"
 import { buildConfig } from "payload"
 import { fileURLToPath } from "url"
-import sharp from "sharp"
+import { payloadCloudinaryPlugin } from "@jhb.software/payload-cloudinary-plugin"
 
+// Collections/Schemas
 import { Users } from "./collections/Users"
 import { Media } from "./collections/Media"
 import { Customers } from "./collections/Customers"
@@ -52,9 +52,18 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || "",
   }),
-  sharp,
   plugins: [
-    payloadCloudPlugin(),
-    // storage-adapter-placeholder
+    payloadCloudinaryPlugin({
+      enabled: process.env.NODE_ENV === "production",
+      uploadCollections: ["media"],
+      credentials: {
+        apiKey: process.env.CLOUDINARY_API_KEY!,
+        apiSecret: process.env.CLOUDINARY_API_SECRET!,
+      },
+      cloudinary: {
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
+        folder: "theoney-brand",
+      },
+    }),
   ],
 })

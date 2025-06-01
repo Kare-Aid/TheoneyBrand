@@ -10,8 +10,7 @@ export const metadata: Metadata = {
     "Shop premium protective phone cases and tempered glasses designed to keep your device safe and stylish. Explore our latest collection today!",
 }
 
-export const dynamic = "force-static"
-export const revalidate = 60
+export const dynamic = "force-dynamic"
 
 async function Page() {
   const payload = await getPayload({ config: configPromise })

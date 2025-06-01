@@ -18,12 +18,15 @@ import { useLikeMutation, useUnlikeMutation } from "@/lib/queries"
 import { FaCamera } from "react-icons/fa"
 import { toast } from "sonner"
 import { useAddToCart } from "@/lib/queries"
+import { LuLoaderCircle } from "react-icons/lu"
 
 //@ts-ignore
 const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
 
 type ImagePosition = "Front" | "Back" | "Side"
 
+//Todo Border to show which color is selected
+//Todo Re-factor list of product images 
 function Eyewear({ product }: { product: Product }) {
   const router = useRouter()
 
@@ -40,7 +43,7 @@ function Eyewear({ product }: { product: Product }) {
 
   const { data: stockResponse, isLoading: isLoadingStock } = useStock(product.id)
 
-  const { mutateAsync: addStockToCart } = useAddToCart()
+  const { mutateAsync: addStockToCart, isPending: isAddingToCart } = useAddToCart()
 
   function getLikeId(productId: string): string | undefined {
     const isSavedLike = savedLikes.find((like) => like.productId === productId)?.likeId
@@ -62,7 +65,8 @@ function Eyewear({ product }: { product: Product }) {
       return
     }
     await addStockToCart({ stockId: selectedStock.id, quantity })
-    toast.success("Added to cart")
+    setSelectedStock(null)
+    setQuantity(1)
   }
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
@@ -278,10 +282,15 @@ function Eyewear({ product }: { product: Product }) {
                 </button>
               </div>
               <button
-                className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full w-full lg:w-max"
+                className="bg-primary text-[#FBFBFB] px-10 py-2 min-w-[50px] rounded-full w-full lg:w-max disabled:opacity-65"
                 onClick={addToCart}
+                disabled={isAddingToCart}
               >
-                Add to cart
+                {isAddingToCart ? (
+                  <LuLoaderCircle size={22} className="animate-spin mx-auto" />
+                ) : (
+                  "Add to cart"
+                )}
               </button>
               <button className="text-primary bg-[#E2EFED]  border border-primary px-10 py-2 rounded-full w-full lg:w-max font-medium">
                 Try it on

@@ -12,7 +12,7 @@ export const GET = async (request: NextRequest) => {
     const query = Object.fromEntries(searchParams.entries())
     const payload = await getPayload({ config: configPromise })
     if (query.cartId) {
-      const cartItems = await payload.find({ collection: "cart-items" })
+      const cartItems = await payload.find({ collection: "cart-items", sort: "createdAt" })
       return Response.json({ message: "Success", data: cartItems.docs }, { status: 200 })
     }
     const session = await auth()
@@ -28,6 +28,7 @@ export const GET = async (request: NextRequest) => {
     }
     const cartItems = await payload.find({
       collection: "cart-items",
+      sort: "createdAt",
       where: { cart: { equals: cart.docs[0].id } },
     })
     return Response.json({ message: "Success", data: cartItems.docs }, { status: 200 })
@@ -81,7 +82,7 @@ export const POST = async (request: NextRequest) => {
       })
       if (stocks.totalDocs < 1) {
         return Response.json(
-          { message: "Cannot add this product to stock at this time", error: "No stock available" },
+          { message: "Cannot add this product to cart at this time", error: "No stock available" },
           { status: 403 },
         )
       }
@@ -98,6 +99,22 @@ export const POST = async (request: NextRequest) => {
       )
     }
     if (quantity && stockId) {
+      const cartItems = await payload.find({
+        collection: "cart-items",
+        where: { "cart.id": { equals: cartId } },
+      })
+      if (cartItems.totalDocs > 0) {
+        const existingCartItems = await payload.find({
+          collection: "cart-items",
+          where: { "stock.id": { equals: stockId } },
+        })
+        if (existingCartItems.totalDocs > 0) {
+          return Response.json(
+            { message: "Item already in cart", error: "ITEM_IN_CART" },
+            { status: 403 },
+          )
+        }
+      }
       const newCartItem = await payload.create({
         collection: "cart-items",
         data: { cart: cartId, quantity: Number(quantity), stock: stockId },
@@ -107,7 +124,6 @@ export const POST = async (request: NextRequest) => {
         { status: 201 },
       )
     }
-    // Todo Do it for add to cart from single product page
   } catch (error) {
     console.error(error)
     return Response.json(
@@ -154,24 +170,3 @@ export const PATCH = async (request: NextRequest) => {
     )
   }
 }
-
-/*
- ADD TO CART BUTTON ON SINGLE PRODUCT COMPONENT & ADD TO CART BUTTON ON SINGLE PRODUCT PAGE LOGIC
- * Would receive {productId?, stockId?, quantity?, cartId?}
- * If request comes from single component button {productId, cartId?}
- * If request comes from single product page {stockId, quantity, cartId?}
- ? Add to cart button would be disabled if the product is of any stock in any of the cart items
- Add to cart button send post request to cart endpoint with product id and cartId if it exists in local storage if user is not logged in
- If cartId exists(the one sent from local storage), create a cart item using the cart id
- If cartId(the one from local storage) is not sent(means user is logged in), check if there's a cart having the userId and a purchased value of false 
- If there's a cart available from the previous check, get the cartId and if there isn't, create for the user
- Use the product id(sent from the frontend) to find a random stock create the cart item with the cartId and the random stock found 
- Send cart information back 
-
- DELETE CART ITEM 
-
- CHANGE QUANTITY (increment and decrement)
-
- Add to cart button on product component would be disabled for phone cases, it would lead to product details page so users can choose which casing variation they want to use 
-
-*/
