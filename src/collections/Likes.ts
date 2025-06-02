@@ -6,4 +6,5 @@ export const Likes: CollectionConfig = {
     { name: "user", type: "relationship", relationTo: "customers", required: false },
     { name: "product", relationTo: "products", type: "relationship" },
   ],
+  indexes: [{ fields: ["user", "product"], unique: true }],
 }

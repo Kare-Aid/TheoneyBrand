@@ -30,6 +30,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  routes: { admin: "/admin-sec" },
   collections: [
     Users,
     Customers,
