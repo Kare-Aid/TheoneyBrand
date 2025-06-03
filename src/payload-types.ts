@@ -201,7 +201,7 @@ export interface Color {
  */
 export interface Variation {
   id: string;
-  name?: string | null;
+  name: string;
   updatedAt: string;
   createdAt: string;
 }

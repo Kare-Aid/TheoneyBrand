@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { CartItem as CartItemType, Product, Stock } from "@/payload-types"
+import { CartItem as CartItemType, Product, Stock, Variation } from "@/payload-types"
 import { Media, Color } from "@/payload-types"
 import Image from "next/image"
 import { useMutation } from "@tanstack/react-query"
@@ -14,7 +14,6 @@ function CartItem(cartItem: CartItemType) {
   const color = stock.color as Color
   const queryClient = useQueryClient()
   const [toastId, setToastId] = useState("")
-
   const { isPending: isUpdating, mutateAsync } = useMutation({
     mutationFn: (action: "increment" | "decrement") => {
       return axios.patch(`/api/cart_/${cartItem.id}?action=${action}`)
@@ -56,10 +55,10 @@ function CartItem(cartItem: CartItemType) {
             />
             <p className="flex gap-1 sm:gap-2 text-sm md:text-base">
               <span>{color.name}</span>
-              {false && (
+              {!product.fitsWith && (
                 <>
                   <span>/</span>
-                  <span>Iphone 13 pro max</span>
+                  <span>{(stock.variation as Variation)?.name}</span>
                 </>
               )}
             </p>

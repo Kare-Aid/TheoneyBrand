@@ -8,7 +8,7 @@ import { z } from "zod"
 export const GET = async (request: NextRequest) => {
   const session = await auth()
   if (!session) {
-    // Request is not supposed to hit if session is not available
+    // Request should not hit if session is not available
     return Response.json(
       { error: "Unauthorized", message: "You cannot access this resource" },
       { status: 401 },
@@ -83,7 +83,7 @@ export const PATCH = async (request: NextRequest) => {
   }
   const session = await auth()
   if (!session) {
-    // Request is not supposed to hit if session is not available
+    // Request should not hit if session is not available
     return Response.json(
       { error: "Unauthorized", message: "You cannot access this resource" },
       { status: 401 },

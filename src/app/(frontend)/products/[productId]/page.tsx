@@ -8,12 +8,12 @@ import PhoneAccessory from "./PhoneAccessory"
 
 export const dynamic = "force-dynamic"
 
-//Todo metadata
+//Todo metadata for single product
 export const metadata: Metadata = {}
 
 //Todo Prefetch products using getStaticParams
 
-// Revalidate when anything is changed in payload
+// Revalidate when anything is changed or added in payload
 
 // Cache the document fetching function
 

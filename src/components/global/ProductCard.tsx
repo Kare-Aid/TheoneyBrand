@@ -13,24 +13,19 @@ type Props = {
   id: string
   name: string
   imageUrl: string
-  fitsWith?: string
   price: number
+  fitsWith?: string
   likeId?: string
   addedToCart?: boolean
 }
 
 //Todo Use ID with toast to show loading indicator for liking and uniking product
 //ID will be tracked with state and updated when it's successful or failed
-//Todo Redirect users to product page when they click on add to cart if product is a phone accessory
 function ProductCard({ id, name, imageUrl, fitsWith, price, likeId, addedToCart }: Props) {
   const router = useRouter()
-
   const { isPending: isLiking, mutateAsync } = useLikeMutation(name as string)
-
   const { isPending: isUnliking, mutate } = useUnlikeMutation(name as string)
-
   const { mutate: addProductToCart, isPending: isAddingToCart } = useAddToCart()
-
   const cartId = useCartStore((state) => state.cartId)
   return (
     <li className="relative w-full min-h-[350px] sm:max-w-[450px]">
@@ -89,6 +84,10 @@ function ProductCard({ id, name, imageUrl, fitsWith, price, likeId, addedToCart 
             disabled={addedToCart || isAddingToCart}
             onClick={(e) => {
               e.stopPropagation()
+              if (!fitsWith) {
+                router.push("/products/" + id)
+                return
+              }
               addProductToCart({ cartId, productId: id })
             }}
           >

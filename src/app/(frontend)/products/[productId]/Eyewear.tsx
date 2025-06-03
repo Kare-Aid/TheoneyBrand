@@ -25,24 +25,18 @@ const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
 
 type ImagePosition = "Front" | "Back" | "Side"
 
-//Todo Border to show which color is selected
-//Todo Re-factor list of product images 
 function Eyewear({ product }: { product: Product }) {
   const router = useRouter()
-
   const [quantity, setQuantity] = useState(1)
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
+  const [currentAngle, setCurrentAngle] = useState<ImagePosition>("Front")
+  const savedLikes = useWishlistStore((state) => state.likes)
+  const category = (product.category as Category)?.name as string
 
   const { data: likes } = useProfileWishList()
-
   const { isPending: isLiking, mutateAsync } = useLikeMutation(product.name)
-
   const { isPending: isUnliking, mutate } = useUnlikeMutation(product.name)
-
-  const savedLikes = useWishlistStore((state) => state.likes)
-
   const { data: stockResponse, isLoading: isLoadingStock } = useStock(product.id)
-
   const { mutateAsync: addStockToCart, isPending: isAddingToCart } = useAddToCart()
 
   function getLikeId(productId: string): string | undefined {
@@ -55,10 +49,6 @@ function Eyewear({ product }: { product: Product }) {
     }
     return isSavedLike || isDbLiked
   }
-  const category = (product.category as Category)?.name as string
-
-  const [currentAngle, setCurrentAngle] = useState<ImagePosition>("Front")
-
   async function addToCart() {
     if (!selectedStock) {
       toast.warning("Please select a color")
@@ -158,56 +148,29 @@ function Eyewear({ product }: { product: Product }) {
 
           {/* Other images */}
           <div className="grid gap-2 grid-cols-3">
-            {product.images?.[0] ? (
-              <div onClick={() => setCurrentAngle("Front")}>
-                <Image
-                  src={(product.images[0].image as Media).url as string}
-                  alt="Front picture"
-                  className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
-                  width={500}
-                  height={300}
-                />
-                <p className="text-sm">Front</p>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <FaCamera className="mx-auto" size={40} />
-              </div>
-            )}
-
-            {product.images?.[1] ? (
-              <div onClick={() => setCurrentAngle("Back")}>
-                <Image
-                  src={(product.images[1].image as Media).url as string}
-                  alt="Front picture"
-                  className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
-                  width={500}
-                  height={300}
-                />
-                <p className="text-sm">Back</p>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <FaCamera className="mx-auto" size={40} />
-              </div>
-            )}
-
-            {product.images?.[2] ? (
-              <div onClick={() => setCurrentAngle("Side")}>
-                <Image
-                  src={(product.images[2].image as Media).url as string}
-                  alt="Front picture"
-                  className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
-                  width={500}
-                  height={300}
-                />
-                <p className="text-sm">Side</p>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <FaCamera className="mx-auto" size={40} />
-              </div>
-            )}
+            {Array.from({ length: 3 }).map((_, index) => {
+              const image = product.images?.[index]
+              return (
+                <>
+                  {image ? (
+                    <div onClick={() => setCurrentAngle(image.label as ImagePosition)} key={image.id}>
+                      <Image
+                        src={(image.image as Media).url as string}
+                        alt="Front picture"
+                        className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
+                        width={500}
+                        height={300}
+                      />
+                      <p className="text-sm">{image.label}</p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <FaCamera className="mx-auto" size={40} />
+                    </div>
+                  )}
+                </>
+              )
+            })}
           </div>
         </div>
 
@@ -234,7 +197,7 @@ function Eyewear({ product }: { product: Product }) {
             )}
 
             {stockResponse && (
-              <ul className="flex items-center gap-1 mb-5">
+              <ul className="flex flex-wrap items-center gap-2 mb-5">
                 {stockResponse.data.data.map((stock) => {
                   const color = (stock.color as Color).hexCode
                   return (
@@ -246,7 +209,11 @@ function Eyewear({ product }: { product: Product }) {
                       }}
                     >
                       <button
-                        style={{ backgroundColor: color }}
+                        style={{
+                          backgroundColor: color,
+                          borderColor: stock.id == selectedStock?.id ? "var(--primary)" : "",
+                          borderWidth: stock.id == selectedStock?.id ? "2px" : "",
+                        }}
                         className={
                           "size-6 sm:size-7 rounded-full " +
                           (color === "#020A1B" && "dark:border border-border ") +

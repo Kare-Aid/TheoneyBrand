@@ -8,4 +8,5 @@ export const Stock: CollectionConfig = {
     { name: "variation", relationTo: "variations", type: "relationship" },
     { name: "quantity", type: "number", required: true, admin: { position: "sidebar" } },
   ],
+  indexes: [{fields: ['product', 'color', 'variation'], unique: true}]
 }

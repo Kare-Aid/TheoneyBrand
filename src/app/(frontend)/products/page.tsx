@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     "Shop premium protective phone cases and tempered glasses designed to keep your device safe and stylish. Explore our latest collection today!",
 }
 
+//Todo Check the dynamic and static
 export const dynamic = "force-static"
 
 async function Page() {

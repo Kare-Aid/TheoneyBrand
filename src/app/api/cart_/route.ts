@@ -147,7 +147,7 @@ export const PATCH = async (request: NextRequest) => {
   }
   const session = await auth()
   if (!session) {
-    // Request is not supposed to hit if session is not available
+    // Request should not hit if session is not available
     return Response.json(
       { error: "Unauthorized", message: "You cannot access this resource" },
       { status: 401 },
@@ -156,11 +156,33 @@ export const PATCH = async (request: NextRequest) => {
 
   try {
     const payload = await getPayload({ config: configPromise })
-    await payload.update({
+    const nonPurchasedCarts = await payload.find({
       collection: "carts",
-      id: result.data.cartId,
-      data: { user: session.user.id },
+      where: { purchased: { equals: false }, "user.id": { equals: session.user.id } },
     })
+    if (nonPurchasedCarts.totalDocs < 1) {
+      await payload.update({
+        collection: "carts",
+        id: result.data.cartId,
+        data: { user: session.user.id },
+      })
+      return Response.json({ message: "Success", data: {} }, { status: 200 })
+    }
+    // Find all cartItems with the current cart (result.data.cartId)
+    const cartItems = await payload.find({
+      collection: "cart-items",
+      where: { "cart.id": { equals: result.data.cartId } },
+    })
+    // Update their cartId to be the cartId of the exising user's cart
+    for (const item of cartItems.docs) {
+      await payload.update({
+        collection: "cart-items",
+        id: item.id,
+        data: { cart: nonPurchasedCarts.docs[0].id },
+      })
+    }
+    // Delete the cart with the id (result.data.cartId) from the database
+    await payload.delete({ collection: "carts", id: result.data.cartId })
     return Response.json({ message: "Success", data: {} }, { status: 200 })
   } catch (error) {
     console.error(error)

@@ -4,34 +4,63 @@ import { FiChevronRight } from "react-icons/fi"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { GoHeart, GoHeartFill } from "react-icons/go"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AccordionItem from "@/components/ui/AccordionItem"
 import { IoIosStar } from "react-icons/io"
 import { genID } from "@/lib/util"
-import { phoneCaseVariations } from "@/lib/data/singleProduct"
 import ProductCard from "@/components/global/ProductCard"
 import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
-import { Category, Media, Product } from "@/payload-types"
-import { useProfileWishList } from "@/lib/queries"
+import { Category, Color, Media, Product, Stock, Variation } from "@/payload-types"
+import { useProfileWishList, useStock, useAddToCart } from "@/lib/queries"
 import { useWishlistStore } from "@/lib/store/wishlist"
 import { useLikeMutation, useUnlikeMutation } from "@/lib/queries"
 import { FaCamera } from "react-icons/fa"
-
-const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
+import { toast } from "sonner"
+import { LuLoaderCircle } from "react-icons/lu"
 
 type ImagePosition = "Front" | "Back" | "Side"
 
 function PhoneAccessory({ product }: { product: Product }) {
   const router = useRouter()
+  const [quantity, setQuantity] = useState(1)
+  const [currentAngle, setCurrentAngle] = useState<ImagePosition>("Front")
+  const [colors, setColors] = useState<Color[]>([])
+  const [variations, setVariations] = useState<Variation[]>([])
+  const [colorId, setColorId] = useState("")
+  const [variationId, setVariationId] = useState("")
+  const savedLikes = useWishlistStore((state) => state.likes)
+  const category = (product.category as Category)?.name as string
 
   const { data: likes } = useProfileWishList()
-
   const { isPending: isLiking, mutateAsync } = useLikeMutation(product.name)
-
   const { isPending: isUnliking, mutate } = useUnlikeMutation(product.name)
+  const { mutateAsync: addStockToCart, isPending: isAddingToCart } = useAddToCart()
+  const { data: stockResponse, isLoading: isLoadingStock } = useStock(product.id)
 
-  const savedLikes = useWishlistStore((state) => state.likes)
+  useEffect(() => {
+    function removeDuplicateFromStock<T extends Color | Variation>(
+      stocks: Stock[],
+      key: "color" | "variation",
+    ): T[] {
+      const filtered: T[] = []
+      const existMap = new Map()
+      for (let i = 0; i < stocks.length; i++) {
+        const object = stocks[i][key] as T
+        if (existMap.has(object.id)) continue
+        filtered.push(object)
+        existMap.set(object.id, object.id)
+      }
+      return filtered
+    }
+    if (stockResponse) {
+      const stocks = stockResponse.data.data
+      const colorsFiltered = removeDuplicateFromStock<Color>(stocks, "color")
+      const variationsFiltered = removeDuplicateFromStock<Variation>(stocks, "variation")
+      setColors(colorsFiltered)
+      setVariations(variationsFiltered)
+    }
+  }, [stockResponse])
 
   function getLikeId(productId: string): string | undefined {
     const isSavedLike = savedLikes.find((like) => like.productId === productId)?.likeId
@@ -43,9 +72,40 @@ function PhoneAccessory({ product }: { product: Product }) {
     }
     return isSavedLike || isDbLiked
   }
-  const category = (product.category as Category)?.name as string
-  const [currentVariation, setCurrentVariation] = useState("")
-  const [currentAngle, setCurrentAngle] = useState<ImagePosition>("Front")
+
+  function getStock(): Stock | null {
+    if (!colorId) {
+      toast.warning("Please select a color")
+      return null
+    }
+    if (!variationId) {
+      toast.warning("Please select your phone type")
+      return null
+    }
+    if (!stockResponse) {
+      toast.warning("Please try again later")
+      return null
+    }
+    const stock = stockResponse.data.data.find((stock) => {
+      const color = stock.color as Color
+      const variation = stock.variation as Variation
+      return colorId == color.id && variationId == variation.id
+    })
+    if (!stock) {
+      toast.warning("Color not available for phone")
+      return null
+    }
+    return stock
+  }
+
+  async function addToCart() {
+    const stock = getStock()
+    if (!stock) return
+    await addStockToCart({ stockId: stock.id, quantity })
+    setQuantity(1)
+    setColorId('')
+    setVariationId('')
+  }
   return (
     <div className="px-4 sm:px-7 md:px-12 pb-20">
       <nav className="my-4 sm:my-6">
@@ -136,56 +196,32 @@ function PhoneAccessory({ product }: { product: Product }) {
 
           {/* Other images */}
           <div className="grid gap-2 grid-cols-3">
-            {product.images?.[0] ? (
-              <div onClick={() => setCurrentAngle("Front")}>
-                <Image
-                  src={(product.images[0].image as Media).url as string}
-                  alt="Front picture"
-                  className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
-                  width={500}
-                  height={300}
-                />
-                <p className="text-sm">Front</p>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <FaCamera className="mx-auto" size={40} />
-              </div>
-            )}
-
-            {product.images?.[1] ? (
-              <div onClick={() => setCurrentAngle("Back")}>
-                <Image
-                  src={(product.images[1].image as Media).url as string}
-                  alt="Front picture"
-                  className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
-                  width={500}
-                  height={300}
-                />
-                <p className="text-sm">Back</p>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <FaCamera className="mx-auto" size={40} />
-              </div>
-            )}
-
-            {product.images?.[2] ? (
-              <div onClick={() => setCurrentAngle("Side")}>
-                <Image
-                  src={(product.images[2].image as Media).url as string}
-                  alt="Front picture"
-                  className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
-                  width={500}
-                  height={300}
-                />
-                <p className="text-sm">Side</p>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center">
-                <FaCamera className="mx-auto" size={40} />
-              </div>
-            )}
+            {Array.from({ length: 3 }).map((_, index) => {
+              const image = product.images?.[index]
+              return (
+                <>
+                  {image ? (
+                    <div
+                      onClick={() => setCurrentAngle(image.label as ImagePosition)}
+                      key={(image.image as Media).url}
+                    >
+                      <Image
+                        src={(image.image as Media).url as string}
+                        alt="Front picture"
+                        className="mb-1 sm:mb-3 h-28 sm:h-48 w-full object-cover"
+                        width={500}
+                        height={300}
+                      />
+                      <p className="text-sm">{image.label}</p>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <FaCamera className="mx-auto" size={40} />
+                    </div>
+                  )}
+                </>
+              )
+            })}
           </div>
         </div>
 
@@ -200,50 +236,100 @@ function PhoneAccessory({ product }: { product: Product }) {
             <h3 className="font-serifDisplay italic text-3xl mb-4">Description</h3>
             <p className="text-sm">{product.description}</p>
           </section>
+
           <div className="">
             <p className="mb-3 font-medium">Colors</p>
-            <ul className="flex items-center gap-1 mb-5">
-              {colors.map((color) => (
-                <li key={color}>
-                  <button
-                    style={{ backgroundColor: color }}
-                    className={
-                      "size-6 rounded-full " +
-                      (color === "#020A1B" && "dark:border border-border ") +
-                      (color === "#ffffff" && "border-black border")
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
+            {isLoadingStock && (
+              <>
+                <ul className="flex items-center gap-1 mb-5">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div className="size-6 bg-slate-400 animate-pulse rounded-full" key={index} />
+                  ))}
+                </ul>
 
-            <ul className="flex gap-2 flex-wrap mb-10" aria-label="List of case variations">
-              {phoneCaseVariations.map((variation) => (
-                <li key={genID()}>
-                  <button
-                    onClick={() => setCurrentVariation(variation)}
-                    className={
-                      "border border-border px-3 py-1 rounded-full " +
-                      (currentVariation == variation ? "bg-primary text-white" : "")
-                    }
-                  >
-                    {variation}
-                  </button>
-                </li>
-              ))}
-            </ul>
+                <ul className="flex flex-wrap items-center gap-1 mb-5">
+                  {Array.from({ length: 8 }).map((_, index) => (
+                    <div className="w-24 h-8 bg-slate-400 animate-pulse rounded-full" key={index} />
+                  ))}
+                </ul>
+              </>
+            )}
+            {stockResponse && (
+              <>
+                <ul className="flex items-center gap-2 mb-5">
+                  {colors.map((color) => (
+                    <li key={color.id}>
+                      <button
+                        style={{
+                          backgroundColor: color.hexCode,
+                          borderColor: colorId == color.id ? "var(--primary)" : "",
+                          borderWidth: colorId == color.id ? "2px" : "",
+                        }}
+                        onClick={() => {
+                          setColorId(color.id)
+                          setQuantity(1)
+                        }}
+                        className={
+                          "size-6 sm:size-7 rounded-full " +
+                          (color.hexCode === "#020A1B" && "dark:border border-border ") +
+                          (color.hexCode === "#ffffff" && "border-black border")
+                        }
+                      />
+                    </li>
+                  ))}
+                </ul>
+
+                <ul className="flex gap-2 flex-wrap mb-10" aria-label="List of case variations">
+                  {variations.map((variation) => (
+                    <li key={genID()}>
+                      <button
+                        onClick={() => {
+                          setVariationId(variation.id)
+                          setQuantity(1)
+                        }}
+                        className={
+                          "border border-border px-3 py-1 rounded-full " +
+                          (variationId == variation.id ? "bg-primary text-white" : "")
+                        }
+                      >
+                        {variation.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
 
             <section className="flex flex-col lg:flex-row gap-2 mb-10">
               <div className="flex justify-around items-center gap-4 rounded-full border border-border px-3 py-1">
-                <button className="text-2xl">-</button>
-                <p className="px-5 text-center">1</p>
-                <button className="text-2xl">+</button>
+                <button
+                  className="text-2xl"
+                  onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                >
+                  -
+                </button>
+                <p className="px-5 text-center">{quantity}</p>
+                <button
+                  className="text-2xl"
+                  onClick={() => {
+                    const stock = getStock()
+                    if (!stock) return
+                    setQuantity((prev) => Math.min(stock.quantity, prev + 1))
+                  }}
+                >
+                  +
+                </button>
               </div>
-              <button className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full w-full lg:w-max">
-                Add to cart
-              </button>
-              <button className="text-primary bg-[#E2EFED]  border border-primary px-10 py-2 rounded-full w-full lg:w-max font-medium">
-                Try it on
+              <button
+                onClick={addToCart}
+                disabled={isAddingToCart}
+                className="bg-primary text-[#FBFBFB] px-10 py-2 min-w-[50px] rounded-full w-full lg:w-max disabled:opacity-65"
+              >
+                {isAddingToCart ? (
+                  <LuLoaderCircle size={22} className="animate-spin mx-auto" />
+                ) : (
+                  "Add to cart"
+                )}
               </button>
             </section>
 
