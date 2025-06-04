@@ -24,17 +24,15 @@ type Products_ = { message: string; data: PaginatedDocs<Products> }
 
 /**Component that displays products according to category */
 function Products({ categoryName, categoryId }: { categoryName: string; categoryId: string }) {
+  const savedLikes = useWishlistStore((state) => state.likes)
+
+  const { data: response } = useCartItems()
+  const { data: likes } = useProfileWishList()
   const { data: result, isLoading } = useQuery({
     queryKey: ["products", categoryId],
     queryFn: () => axios.get<Products_>("/api/products_?categoryId=" + categoryId),
     throwOnError: true,
   })
-
-  const { data: response } = useCartItems()
-
-  const { data: likes } = useProfileWishList()
-
-  const savedLikes = useWishlistStore((state) => state.likes)
 
   function checkProductInCart(productId: string): boolean {
     if (!response) return false
@@ -43,7 +41,6 @@ function Products({ categoryName, categoryId }: { categoryName: string; category
     })
     return Boolean(product)
   }
-
   function getLikeId(productId: string): string | undefined {
     const isSavedLike = savedLikes.find((like) => like.productId === productId)?.likeId
     let isDbLiked
