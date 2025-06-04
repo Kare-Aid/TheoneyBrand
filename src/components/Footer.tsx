@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import Link from "next/link"
-import Logo from "./Logo"
+import Logo from "./global/Logo"
 import { usePathname } from "next/navigation"
 import { excludedLinks } from "@/lib/constants"
 
