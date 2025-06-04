@@ -3,6 +3,7 @@ import { getPayload } from "payload"
 import configPromise from "@payload-config"
 import { auth } from "@/auth"
 import { z } from "zod"
+import { Product } from "@/payload-types"
 
 // Send Likes for a user
 export const GET = async (request: NextRequest) => {
@@ -68,10 +69,15 @@ export const POST = async (request: NextRequest) => {
 }
 
 const schema = z.object({
-  likes: z.array(z.string().min(20).max(26)),
+  likes: z.array(
+    z.object({
+      likeId: z.string().min(20).max(26),
+      productId: z.string().min(20).max(26),
+    }),
+  ),
 })
 
-// Update likes in database with user id using the likes id from browser storage
+/**Update likes in database with user id using the likes id from browser storage */
 export const PATCH = async (request: NextRequest) => {
   const data = await request.json()
   const result = schema.safeParse(data)
@@ -89,14 +95,24 @@ export const PATCH = async (request: NextRequest) => {
       { status: 401 },
     )
   }
+  const { id } = session.user
   try {
     const payload = await getPayload({ config: configPromise })
-    // Todo Edgecase where user likes a product while being logged in then likes it again after logging out
-    await Promise.all(
-      result.data.likes.map((like) =>
-        payload.update({ collection: "likes", id: like, data: { user: session.user.id } }),
-      ),
-    )
+    const userLikes = await payload.find({
+      collection: "likes",
+      where: { "user.id": { equals: id } },
+    })
+    const userLikeMap = new Map<string, string>()
+    for (const like of userLikes.docs) {
+      userLikeMap.set((like.product as Product).id, like.id)
+    }
+    for (const like of result.data.likes) {
+      if (userLikeMap.has(like.productId)) {
+        await payload.delete({ collection: "likes", id: like.likeId })
+        continue
+      }
+      await payload.update({ collection: "likes", id: like.likeId, data: { user: id } })
+    }
     return Response.json({ message: "Success", data: {} }, { status: 200 })
   } catch (error) {
     console.error(error)

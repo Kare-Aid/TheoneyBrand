@@ -73,7 +73,6 @@ export const POST = async (request: NextRequest) => {
   const { productId, cartId: _cartId, quantity, stockId } = result.data
   try {
     const payload = await getPayload({ config: configPromise })
-    const cartId = _cartId || (await findOrCreateCart(userId))
     if (productId) {
       //? Request from Add to Cart button on single product component
       const stocks = await payload.find({
@@ -86,6 +85,7 @@ export const POST = async (request: NextRequest) => {
           { status: 403 },
         )
       }
+      const cartId = _cartId || (await findOrCreateCart(userId))
       // Select random stock from available stock
       const randomStockId = stocks.docs[Math.floor(Math.random() * stocks.docs.length)].id
       const newCartItem = await payload.create({
@@ -98,7 +98,9 @@ export const POST = async (request: NextRequest) => {
         { status: 201 },
       )
     }
+    //? Request from Add to Cart button on single product page
     if (quantity && stockId) {
+      const cartId = _cartId || (await findOrCreateCart(userId))
       const cartItems = await payload.find({
         collection: "cart-items",
         where: { "cart.id": { equals: cartId } },
@@ -181,7 +183,7 @@ export const PATCH = async (request: NextRequest) => {
         data: { cart: nonPurchasedCarts.docs[0].id },
       })
     }
-    // Delete the cart with the id (result.data.cartId) from the database
+    // Delete the redundant cart with the id (result.data.cartId) from the database
     await payload.delete({ collection: "carts", id: result.data.cartId })
     return Response.json({ message: "Success", data: {} }, { status: 200 })
   } catch (error) {

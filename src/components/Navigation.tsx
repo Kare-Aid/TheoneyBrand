@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from "react"
 import { AnimatePresence } from "framer-motion"
-import Logo from "./Logo"
+import Logo from "./global/Logo"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { LuSunMedium } from "react-icons/lu"
@@ -99,7 +99,7 @@ function Navigation() {
           <>
             {/* Dark overlay */}
             <motion.div
-              className="absolute left-0 top-0 w-full h-screen bg-black/50 z-10"
+              className="absolute left-0 top-0 w-full h-screen bg-black/50 z-20"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

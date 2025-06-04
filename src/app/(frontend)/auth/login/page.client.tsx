@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import axios from "axios"
 import { useWishlistStore } from "@/lib/store/wishlist"
 import { useCartStore } from "@/lib/store/cart"
+import { useQueryClient } from "@tanstack/react-query"
 
 type LoginSchema = z.infer<typeof loginSchema>
 
@@ -22,6 +23,7 @@ function Login() {
   const { cartId, setCartId } = useCartStore()
   const searchParams = useSearchParams()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [showPassword, setShowPassword] = useState(false)
   function toggleShowPassword() {
     setShowPassword((prev) => !prev)
@@ -40,11 +42,10 @@ function Login() {
       const response = await signIn("credentials", { ...data, redirect: false })
       if (response && !response.error) {
         toast.success("Login successful")
-        // Send likes to be appended with userId
+        // Send all likes in localStorage to be appended with userId
         if (savedLikes.length > 0) {
-          const likeIds = savedLikes.map((like) => like.likeId)
           //! Todo Error handling
-          axios.patch("/api/wishlist", { likes: likeIds })
+          axios.patch("/api/wishlist", { likes: savedLikes })
           //Todo Invalidate wishlist query if refetch is disabled
           deleteAllLikes()
         }
@@ -53,6 +54,7 @@ function Login() {
           axios.patch("/api/cart_", { cartId })
           setCartId("")
         }
+        queryClient.invalidateQueries({ queryKey: ["cart"] })
         return router.replace("/profile")
       }
       toast.error("Invalid Email or password")

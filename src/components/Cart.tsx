@@ -57,11 +57,15 @@ function Cart({ showCart, closeCart }: Props) {
             </div>
           )}
           {cartItems && cartItems.data.data.length < 1 && (
-            <div className="h-[40vh] flex gap-4 flex-col items-center justify-center">
+            <div className="h-[40vh] flex gap-10 flex-col items-center justify-center">
               <p className="font-serifDisplay text-center text-2xl sm:text-3xl md:text-4xl">
                 No items in cart
               </p>
-              <Link href="/products" className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full">
+              <Link
+                onClick={closeCart}
+                href="/products"
+                className="bg-primary text-[#FBFBFB] px-10 py-2 rounded-full"
+              >
                 Shop now
               </Link>
             </div>
