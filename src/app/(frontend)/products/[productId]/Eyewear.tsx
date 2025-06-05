@@ -19,6 +19,7 @@ import { FaCamera } from "react-icons/fa"
 import { toast } from "sonner"
 import { useAddToCart } from "@/lib/queries"
 import { LuLoaderCircle } from "react-icons/lu"
+import Popup from "@/components/ui/Popup"
 
 //@ts-ignore
 const colors = ["#DF2020", "#0009B4", "#ffffff", "#020A1B", "#B08E8B"]
@@ -30,6 +31,7 @@ function Eyewear({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1)
   const [selectedStock, setSelectedStock] = useState<Stock | null>(null)
   const [currentAngle, setCurrentAngle] = useState<ImagePosition>("Front")
+  const [openAR, setOpenAR] = useState(false)
   const savedLikes = useWishlistStore((state) => state.likes)
   const category = (product.category as Category)?.name as string
 
@@ -153,7 +155,10 @@ function Eyewear({ product }: { product: Product }) {
               return (
                 <>
                   {image ? (
-                    <div onClick={() => setCurrentAngle(image.label as ImagePosition)} key={image.id}>
+                    <div
+                      onClick={() => setCurrentAngle(image.label as ImagePosition)}
+                      key={image.id}
+                    >
                       <Image
                         src={(image.image as Media).url as string}
                         alt="Front picture"
@@ -259,10 +264,26 @@ function Eyewear({ product }: { product: Product }) {
                   "Add to cart"
                 )}
               </button>
-              <button className="text-primary bg-[#E2EFED]  border border-primary px-10 py-2 rounded-full w-full lg:w-max font-medium">
+              <button
+                onClick={() => setOpenAR(true)}
+                className="text-primary bg-[#E2EFED]  border border-primary px-10 py-2 rounded-full w-full lg:w-max font-medium"
+              >
                 Try it on
               </button>
             </section>
+
+            <Popup isOpen={openAR} onClose={() => setOpenAR(false)}>
+              <div className="w-full min-w-[320px] md:min-w-[600px] h-[480px]">
+                <iframe
+                  title="Damilola Sample"
+                  allowFullScreen
+                  allow="fullscreen; autoplay; xr-spatial-tracking; camera; midi; encrypted-media;"
+                  width="100%"
+                  height="100%"
+                  src="https://swiftxr.swiftxr.site/damilola-sample"
+                ></iframe>
+              </div>
+            </Popup>
 
             {product.details && product.details.length > 0 && (
               <AccordionItem
