@@ -271,6 +271,7 @@ export interface Cart {
   id: string;
   user?: (string | null) | Customer;
   purchased?: boolean | null;
+  reference?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -536,6 +537,7 @@ export interface StockSelect<T extends boolean = true> {
 export interface CartsSelect<T extends boolean = true> {
   user?: T;
   purchased?: T;
+  reference?: T;
   updatedAt?: T;
   createdAt?: T;
 }

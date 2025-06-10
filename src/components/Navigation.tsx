@@ -14,6 +14,8 @@ import useDarkModeObserver from "@/hooks/useDarkModeObserver"
 import { usePathname } from "next/navigation"
 import { excludedLinks } from "@/lib/constants"
 import Cart from "./Cart"
+import { useCartState } from "@/lib/store/cart"
+import { getCookie, deleteCookie } from "cookies-next"
 
 const links: { text: string; url: string }[] = [
   { text: "Home", url: "/" },
@@ -25,10 +27,10 @@ const links: { text: string; url: string }[] = [
 
 function Navigation() {
   const [openNav, setOpenNav] = useState(false)
-  const [showCart, setShowCart] = useState(false)
   const { setTheme } = useTheme()
   const isDarkMode = useDarkModeObserver()
   const pathname = usePathname()
+  const { openCart, setOpenCart } = useCartState()
 
   async function closeNavigation() {
     //Animate links out before navigation closes
@@ -41,6 +43,16 @@ function Navigation() {
   }
 
   useEffect(() => {
+    if (!excludedLinks.includes(pathname)) {
+      const wasCartOpen = getCookie("cartOpen")
+      if (wasCartOpen && wasCartOpen == "true") {
+        setOpenCart(true)
+        deleteCookie("cartOpen")
+      }
+    }
+  }, [pathname])
+
+  useEffect(() => {
     //Animate links in when openNav is set to true
     if (openNav) {
       animate(
@@ -49,20 +61,31 @@ function Navigation() {
         { duration: 1, delay: stagger(0.1), type: spring, stiffness: 300 },
       )
     }
-
     // Lock scroll when menu or cart is opened
-    if (showCart || openNav) document.body.classList.add("overflow-hidden")
+    if (openCart || openNav) document.body.classList.add("overflow-hidden")
     else document.body.classList.remove("overflow-hidden")
 
     return () => {
       document.body.classList.remove("overflow-hidden")
     }
-  }, [openNav, showCart])
+  }, [openNav, openCart])
 
   if (excludedLinks.includes(pathname)) return null
   return (
     <>
-      <Cart showCart={showCart} closeCart={() => setShowCart(false)} />
+      <AnimatePresence>
+        {openCart && (
+          <motion.div
+            initial={{ top: "-100%" }}
+            animate={{ top: 0 }}
+            exit={{ top: "-100%" }}
+            transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+            className="bg-background fixed z-[50] top-0 left-1/2 -translate-x-1/2 w-full h-screen max-h-[2000px] border-red-700 max-w-screen-2xl px-4 sm:px-7 md:px-12 overflow-y-auto pb-24 md:pb-10"
+          >
+            <Cart showCart={openCart} closeCart={() => setOpenCart(false)} />
+          </motion.div>
+        )}
+      </AnimatePresence>
       <header className="flex items-center justify-between bg-transparent px-4 sm:px-7 md:px-12 py-2 relative z-10">
         <Link href="/">
           <Logo />
@@ -79,7 +102,7 @@ function Navigation() {
           </motion.button>
 
           <button
-            onClick={() => setShowCart(true)}
+            onClick={() => setOpenCart(true)}
             className="bg-[#010D0B] text-white dark:bg-white dark:text-[#010D0B] p-2 rounded-full text-base sm:text-lg hidden md:inline"
           >
             <PiShoppingCartBold />
@@ -131,7 +154,7 @@ function Navigation() {
                     className="font-serifDisplay text-4xl md:text-6xl text-white"
                     key={Math.random() * 29345}
                     onClick={() => {
-                      if (link.text == "Cart") setShowCart(true)
+                      if (link.text == "Cart") setOpenCart(true)
                       closeNavigation()
                     }}
                   >

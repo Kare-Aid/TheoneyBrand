@@ -11,13 +11,14 @@ import { useSession } from "next-auth/react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { PaginatedDocs } from "payload"
-import { Media, Customer } from "@/payload-types"
+import { Media } from "@/payload-types"
 import { useForm, SubmitHandler } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { profileSchema } from "@/lib/schemas"
 import { toast } from "sonner"
 import { LuLoaderCircle } from "react-icons/lu"
+import { useProfileQuery } from "@/lib/queries"
 
 type UpdateProfileResponse = {
   message: string
@@ -33,11 +34,6 @@ type UpdateProfileResponse = {
     ]
     errors: []
   }
-}
-
-type ProfileResponse = {
-  message: string
-  data: Customer
 }
 
 type Product = {
@@ -73,10 +69,7 @@ function Profile() {
   })
 
   // Abstract this out
-  const { data: profileResponse, refetch: refetchProfile } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => axios.get<ProfileResponse>("/api/profile"),
-  })
+  const { data: profileResponse, refetch: refetchProfile } = useProfileQuery()
 
   const { data: userSession, update } = useSession()
 

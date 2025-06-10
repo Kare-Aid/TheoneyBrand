@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios, { AxiosError } from "axios"
 import { PaginatedDocs } from "payload"
-import { Like, Cart, Stock, CartItem } from "@/payload-types"
+import { Like, Cart, Stock, CartItem, Customer } from "@/payload-types"
 import { useSession } from "next-auth/react"
 import { toast } from "sonner"
 import { useWishlistStore } from "./store/wishlist"
@@ -120,5 +120,17 @@ export const useStock = (productId: string) => {
   return useQuery({
     queryKey: ["stock", productId],
     queryFn: () => axios.get<StockResult>("/api/stocks?productId=" + productId),
+  })
+}
+
+type ProfileResponse = {
+  message: string
+  data: Customer
+}
+
+export const useProfileQuery = () => {
+  return useQuery({
+    queryKey: ["profile"],
+    queryFn: () => axios.get<ProfileResponse>("/api/profile"),
   })
 }

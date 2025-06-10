@@ -14,6 +14,7 @@ import axios from "axios"
 import { useWishlistStore } from "@/lib/store/wishlist"
 import { useCartStore } from "@/lib/store/cart"
 import { useQueryClient } from "@tanstack/react-query"
+import { getCookie, deleteCookie } from "cookies-next"
 
 type LoginSchema = z.infer<typeof loginSchema>
 
@@ -55,7 +56,14 @@ function Login() {
           setCartId("")
         }
         queryClient.invalidateQueries({ queryKey: ["cart"] })
-        return router.replace("/profile")
+        const redirectedFrom = getCookie("redirectedFrom") as string
+        if (!redirectedFrom) {
+          router.replace("/profile")
+          return 
+        }
+        router.replace(redirectedFrom)
+        deleteCookie("redirectedFrom")
+        return
       }
       toast.error("Invalid Email or password")
     } catch (error) {

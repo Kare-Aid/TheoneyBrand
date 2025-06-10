@@ -47,3 +47,8 @@ export const addCartSchema = z.object({
 })
 
 export type AddToCartPayload = z.infer<typeof addCartSchema>
+
+export const checkoutSchema = z.object({
+  email: z.string().min(1, "Email address is required").email("Please enter a valid email address"),
+  amount: z.coerce.number(),
+})

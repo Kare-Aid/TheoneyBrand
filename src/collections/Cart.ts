@@ -6,5 +6,6 @@ export const Cart: CollectionConfig = {
   fields: [
     { name: "user", type: "relationship", relationTo: "customers", required: false },
     { name: "purchased", type: "checkbox", defaultValue: false, admin: { readOnly: true } },
+    { name: "reference", type: "text" },
   ],
 }

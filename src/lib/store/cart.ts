@@ -15,3 +15,13 @@ export const useCartStore = create<CartStore>()(
     { name: "theoney-cart", storage: createJSONStorage(() => localStorage) },
   ),
 )
+
+type CartState = {
+  openCart: boolean
+  setOpenCart: (state: boolean) => void
+}
+
+export const useCartState = create<CartState>()((set) => ({
+  openCart: false,
+  setOpenCart: (cartState) => set(() => ({ openCart: cartState })),
+}))
